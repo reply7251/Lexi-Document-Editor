@@ -1,17 +1,18 @@
 package me.sa_g6.ui.widgets;
 
+import me.sa_g6.formatting.LeftAlignment;
 import me.sa_g6.ui.*;
 import me.sa_g6.ui.view.CellView;
+import me.sa_g6.ui.view.ResizeableIconView;
 import me.sa_g6.ui.view.RowView;
 import me.sa_g6.ui.view.TableView;
+import me.sa_g6.utils.ClipboardUtils;
 import me.sa_g6.utils.CombinedAction;
 
 import javax.swing.*;
 import javax.swing.text.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.datatransfer.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
@@ -19,6 +20,7 @@ import java.io.IOException;
 
 public class Tab extends JPanel {
     JTextPane editor = new JTextPane();
+    JPopupMenu popup = new JPopupMenu();
 
     public Tab(){
         super();
@@ -78,6 +80,27 @@ public class Tab extends JPanel {
 
             }
         }), ctrlV, JComponent.WHEN_FOCUSED);
+
+        final JMenuItem copy = new JMenuItem("Copy      CTRL+C");
+        copy.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selected = Tab.this.editor.getSelectedText();
+
+                if(selected==null)
+                    return;
+                StringSelection clipString = new StringSelection(selected);
+                ClipboardUtils.getClipboard().setContents(clipString,clipString);
+            }
+        });
+
+        editor.getDocument().getRootElements();
+
+        popup.add(copy);
+        copy.setEnabled(true);
+        editor.setComponentPopupMenu(popup);
+
     }
 
     public JTextPane getEditor() {
@@ -117,7 +140,7 @@ class TableFactory implements ViewFactory {
             case StyleConstants.IconElementName:
                 return new IconView(elem);
             case "IMG":
-                return new IconView(elem); //new PatchedImageView(elem);
+                return new ResizeableIconView(elem); //new PatchedImageView(elem);
             default:
                 return new LabelView(elem);
 
