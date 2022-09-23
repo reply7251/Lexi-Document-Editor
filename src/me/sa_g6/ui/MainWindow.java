@@ -4,10 +4,12 @@ import me.sa_g6.formatting.Alignment;
 import me.sa_g6.formatting.CenterAlignment;
 import me.sa_g6.formatting.LeftAlignment;
 import me.sa_g6.formatting.RightAlignment;
+import me.sa_g6.ui.widgets.AlignmentMenuItem;
 import me.sa_g6.ui.widgets.Tab;
 
 import javax.swing.*;
 import javax.swing.text.*;
+import java.awt.*;
 
 public class MainWindow extends JFrame {
     JTabbedPane tabs = new JTabbedPane();
@@ -27,36 +29,15 @@ public class MainWindow extends JFrame {
         tabs.add("new 1", tab1);
         tabs.add("new 2", new Tab());
 
-        JMenu menu = new JMenu("File");
+        JMenu fileMenu = new JMenu("File");
         JMenuItem item = new JMenuItem("Open...");
-        menu.add(item);
-        menuBar.add(menu);
-        JMenu formatMenu = new JMenu("Format");
-        JMenuItem alignLeft = new JMenuItem("Align left");
-        Alignment leftAlignment = new LeftAlignment();
-        alignLeft.addActionListener((e)->{
-            if(tabs.getSelectedComponent() instanceof Tab tab){
-                leftAlignment.perform(tab.getEditor().getStyledDocument());
-            }
-        });
-        formatMenu.add(alignLeft);
-        JMenuItem alignRight = new JMenuItem("Align Right");
-        Alignment rightAlignment = new RightAlignment();
-        alignRight.addActionListener((e)->{
-            if(tabs.getSelectedComponent() instanceof Tab tab){
-                rightAlignment.perform(tab.getEditor().getStyledDocument());
-            }
-        });
-        formatMenu.add(alignRight);
-        JMenuItem alignCenter = new JMenuItem("Align Center");
-        Alignment centerAlignment = new CenterAlignment();
-        alignCenter.addActionListener((e)->{
-            if(tabs.getSelectedComponent() instanceof Tab tab){
-                centerAlignment.perform(tab.getEditor().getStyledDocument());
-            }
-        });
-        formatMenu.add(alignCenter);
+        fileMenu.add(item);
+        menuBar.add(fileMenu);
 
+        JMenu formatMenu = new JMenu("Format");
+        formatMenu.add(new AlignmentMenuItem(this,"Align left", new LeftAlignment()));
+        formatMenu.add(new AlignmentMenuItem(this,"Align Right", new RightAlignment()));
+        formatMenu.add(new AlignmentMenuItem(this,"Align Center", new CenterAlignment()));
         menuBar.add(formatMenu);
 
         setJMenuBar(menuBar);
@@ -87,6 +68,10 @@ public class MainWindow extends JFrame {
         } catch (BadLocationException e) {
             e.printStackTrace();
         }
+    }
+
+    public Component getCurrentTab(){
+        return tabs.getSelectedComponent();
     }
 }
 
