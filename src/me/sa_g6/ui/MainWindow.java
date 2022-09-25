@@ -4,6 +4,7 @@ import me.sa_g6.formatting.CenterAlignment;
 import me.sa_g6.formatting.LeftAlignment;
 import me.sa_g6.formatting.RightAlignment;
 import me.sa_g6.ui.widgets.AlignmentMenuItem;
+import me.sa_g6.ui.widgets.BackgroundColorMenuItem;
 import me.sa_g6.ui.widgets.Tab;
 
 import javax.swing.*;
@@ -42,6 +43,13 @@ public class MainWindow extends JFrame {
         formatMenu.add(new AlignmentMenuItem(this,"Align Center", new CenterAlignment()));
         menuBar.add(formatMenu);
 
+        JMenu colorMenu = new JMenu("Color");
+        colorMenu.add(new BackgroundColorMenuItem(this,"BG-Red",Color.red));
+        colorMenu.add(new BackgroundColorMenuItem(this,"BG-Green",Color.green));
+        colorMenu.add(new BackgroundColorMenuItem(this,"BG-Blue",Color.blue));
+        colorMenu.add(new BackgroundColorMenuItem(this,"BG-Yellow",Color.yellow));
+        colorMenu.add(new BackgroundColorMenuItem(this,"BG-Orange",Color.orange));
+        menuBar.add(colorMenu);
         setJMenuBar(menuBar);
 
         tab1.insertTable(tab1.getEditor().getCaretPosition(),2,3);
