@@ -1,22 +1,20 @@
 package me.sa_g6.ui.widgets;
 
-import me.sa_g6.formatting.LeftAlignment;
-import me.sa_g6.ui.*;
-import me.sa_g6.ui.view.CellView;
-import me.sa_g6.ui.view.ResizeableIconView;
-import me.sa_g6.ui.view.RowView;
-import me.sa_g6.ui.view.TableView;
 import me.sa_g6.utils.ClipboardUtils;
 import me.sa_g6.utils.CombinedAction;
+import me.sa_g6.utils.ImageUtils;
 
 import javax.swing.*;
 import javax.swing.text.*;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
+import java.awt.*;
 import java.awt.datatransfer.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.URL;
 
 public class Tab extends JPanel {
     JTextPane editor = new JTextPane();
@@ -24,75 +22,53 @@ public class Tab extends JPanel {
 
     public Tab(){
         super();
-
-
-
         GroupLayout layout = new GroupLayout(this);
-
         setLayout(layout);
 
-        editor.setEditorKit(new TableEditorKit());
-        editor.setDocument(new TableDocument());
-        Action action = editor.getActionMap().get(DefaultEditorKit.pasteAction);
-        //editor.getActionMap().put(DefaultEditorKit.pasteAction, new ProxyAction(action, DefaultEditorKit.pasteAction));
-
+        editor.setContentType("text/html");
+        ImageUtils.setCache(editor.getDocument());
+        insertHtml(0,"<html><body></body></html>");
+        HTMLDocument doc = (HTMLDocument) editor.getDocument();
+        doc.getStyleSheet().addRule("""
+                td {
+                    border: 1px solid black;
+                    width:100px
+                }
+                """);
         JScrollPane pane = new JScrollPane(editor);
-        layout.setHorizontalGroup(
-                layout.createParallelGroup(GroupLayout.Alignment.LEADING) .addComponent(pane)
-        );
+        layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(pane));
 
-        layout.setVerticalGroup(
-                layout.createParallelGroup(GroupLayout.Alignment.LEADING) .addComponent(pane)
-        );
-        DocumentFilter f;
+        layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(pane));
 
         KeyStroke ctrlV = KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK);
         final ActionListener ctrlVAction = editor.getActionForKeyStroke(ctrlV);
         editor.unregisterKeyboardAction(ctrlV);
         editor.registerKeyboardAction(new CombinedAction(ctrlVAction, (e)->{
             Object src = e.getSource();
-            if (src instanceof JComponent) {
-                JComponent c = (JComponent) src;
+            if (src instanceof JComponent c) {
                 Clipboard cb = c.getToolkit().getSystemClipboard();
                 Transferable trans = cb.getContents(null);
                 for(DataFlavor dataFlavor : trans.getTransferDataFlavors()){
                     try {
                         Object o = trans.getTransferData(dataFlavor);
-                        if(o instanceof String){
-                            continue;
-                        }else if(o instanceof BufferedImage){
-                            BufferedImage bi = (BufferedImage) o;
-                            final SimpleAttributeSet attrs=new SimpleAttributeSet();
-                            ImageIcon icon = new ImageIcon(bi);
-                            StyleConstants.setIcon(attrs, icon);
-                            attrs.addAttribute("img",bi);
-                            editor.getDocument().insertString(editor.getCaretPosition(),")", attrs);
-                            //((TableDocument)editor.getDocument()).insertImage(editor.getCaretPosition(), bi);
-
+                        if(o instanceof BufferedImage bi){
+                            insertImage(editor.getCaretPosition(), bi);
                         }
                     } catch (UnsupportedFlavorException | IOException ex) {
                         ex.printStackTrace();
-                    } catch (BadLocationException ex) {
-                        ex.printStackTrace();
                     }
                 }
-
-
             }
         }), ctrlV, JComponent.WHEN_FOCUSED);
 
         final JMenuItem copy = new JMenuItem("Copy      CTRL+C");
-        copy.addActionListener(new ActionListener() {
+        copy.addActionListener(e -> {
+            String selected = Tab.this.editor.getSelectedText();
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String selected = Tab.this.editor.getSelectedText();
-
-                if(selected==null)
-                    return;
-                StringSelection clipString = new StringSelection(selected);
-                ClipboardUtils.getClipboard().setContents(clipString,clipString);
-            }
+            if(selected==null)
+                return;
+            StringSelection clipString = new StringSelection(selected);
+            ClipboardUtils.getClipboard().setContents(clipString,clipString);
         });
 
         editor.getDocument().getRootElements();
@@ -100,51 +76,38 @@ public class Tab extends JPanel {
         popup.add(copy);
         copy.setEnabled(true);
         editor.setComponentPopupMenu(popup);
-
     }
 
     public JTextPane getEditor() {
         return editor;
     }
-}
 
-class TableEditorKit extends StyledEditorKit {
-    ViewFactory defaultFactory = new TableFactory();
-    public ViewFactory getViewFactory() {
-        return defaultFactory;
+    public void insertHtml(int offset, String html){
+        HTMLEditorKit kit = (HTMLEditorKit) getEditor().getEditorKit();
+        HTMLDocument doc = (HTMLDocument) getEditor().getStyledDocument();
+
+        try {
+            kit.insertHTML(doc, offset, html, 0, 0, null);
+        } catch (BadLocationException | IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public Document createDefaultDocument() {
-        return new TableDocument();
-    }
-}
+    public void insertTable(int offset, int rowCount, int colCount){
+        StringBuilder builder = new StringBuilder("<table>");
 
-class TableFactory implements ViewFactory {
-    public View create(Element elem) {
-
-
-        String kind = elem.getName();
-        switch (kind) {
-            case AbstractDocument.ParagraphElementName:
-                return new ParagraphView(elem);
-            case AbstractDocument.SectionElementName:
-                return new BoxView(elem, View.Y_AXIS);
-            case StyleConstants.ComponentElementName:
-                return new ComponentView(elem);
-            case TableDocument.ELEMENT_NAME_TABLE:
-                return new TableView(elem);
-            case TableDocument.ELEMENT_NAME_ROW:
-                return new RowView(elem);
-            case TableDocument.ELEMENT_NAME_CELL:
-                return new CellView(elem);
-            case StyleConstants.IconElementName:
-                return new IconView(elem);
-            case "IMG":
-                return new ResizeableIconView(elem); //new PatchedImageView(elem);
-            default:
-                return new LabelView(elem);
-
+        for(int i = 0; i < rowCount; i++){
+            builder.append("<tr>");
+            builder.append("<td><div></div></td>".repeat(Math.max(0, colCount)));
+            builder.append("</tr>\n");
         }
 
+        builder.append("</table>\n");
+        insertHtml(offset, builder.toString());
+    }
+
+    public void insertImage(int offset, Image image){
+        URL url = ImageUtils.putImage(image);
+        insertHtml(offset, "<img src='"+url+"'></img>");
     }
 }
