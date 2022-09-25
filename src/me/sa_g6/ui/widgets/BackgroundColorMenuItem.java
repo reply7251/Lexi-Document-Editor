@@ -7,7 +7,7 @@ import javax.swing.text.StyleConstants;
 import java.awt.*;
 
 
-public class BackgroundColorMenuItem extends IColorMenuItem {
+public class BackgroundColorMenuItem extends IMenuItem {
 
     public BackgroundColorMenuItem(MainWindow mw, String text, Color color) {
         super(text, (e) -> {

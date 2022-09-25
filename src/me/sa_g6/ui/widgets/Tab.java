@@ -37,7 +37,6 @@ public class Tab extends JPanel {
                 """);
         JScrollPane pane = new JScrollPane(editor);
         layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(pane));
-
         layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(pane));
 
         KeyStroke ctrlV = KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK);
@@ -80,6 +79,10 @@ public class Tab extends JPanel {
 
     public JTextPane getEditor() {
         return editor;
+    }
+
+    public HTMLDocument getDocument(){
+        return (HTMLDocument) editor.getDocument();
     }
 
     public void insertHtml(int offset, String html){
