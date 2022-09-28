@@ -46,25 +46,25 @@ public class MainWindow extends JFrame {
         menuBar.add(formatMenu);
 
 
-       JMenuItem menuItem = null;
-        JMenu mainMenu = new JMenu("Edit");
-        mainMenu.setMnemonic(KeyEvent.VK_E);
+        JMenuItem menuItem ;
+        JMenu editmenu = new JMenu("Edit");
+        editmenu.setMnemonic(KeyEvent.VK_E);
 
         menuItem = new JMenuItem(new DefaultEditorKit.CutAction());
         menuItem.setText("Cut");
         menuItem.setMnemonic(KeyEvent.VK_T);
-        mainMenu.add(menuItem);
+        editmenu.add(menuItem);
 
         menuItem = new JMenuItem(new DefaultEditorKit.CopyAction());
         menuItem.setText("Copy");
         menuItem.setMnemonic(KeyEvent.VK_C);
-        mainMenu.add(menuItem);
+        editmenu.add(menuItem);
 
         menuItem = new JMenuItem(new DefaultEditorKit.PasteAction());
         menuItem.setText("Paste");
         menuItem.setMnemonic(KeyEvent.VK_P);
-        mainMenu.add(menuItem);
-        menuBar.add(mainMenu);
+        editmenu.add(menuItem);
+        menuBar.add(editmenu);
 
 
 
