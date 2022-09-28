@@ -6,12 +6,9 @@ import me.sa_g6.utils.ImageUtils;
 
 import javax.swing.*;
 import javax.swing.text.*;
-import javax.swing.text.html.HTMLDocument;
-import javax.swing.text.html.HTMLEditorKit;
-import java.awt.*;
+import javax.swing.text.html.*;
 import java.awt.datatransfer.*;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
@@ -25,7 +22,9 @@ public class Tab extends JPanel {
         GroupLayout layout = new GroupLayout(this);
         setLayout(layout);
 
-        editor.setContentType("text/html");
+        //editor.setContentType("text/html");
+        editor.setDocument(new EnhancedHTMLDocument());
+        editor.setEditorKit(new EnhancedHTMLEditorKit());
         ImageUtils.setCache(editor.getDocument());
         insertHtml(0,"<html><body></body></html>");
         HTMLDocument doc = (HTMLDocument) editor.getDocument();
@@ -109,8 +108,52 @@ public class Tab extends JPanel {
         insertHtml(offset, builder.toString());
     }
 
-    public void insertImage(int offset, Image image){
+    public void insertImage(int offset, BufferedImage image){
         URL url = ImageUtils.putImage(image);
-        insertHtml(offset, "<img src='"+url+"'></img>");
+        insertHtml(offset, "<img src=\"%s\" width=\"%d\" height=\"%d\"></img>".formatted(url, image.getWidth(), image.getHeight()));
     }
 }
+
+class EnhancedHTMLEditorKit extends HTMLEditorKit{
+    ImageController imageController = new ImageController();
+
+    @Override
+    public void install(JEditorPane c) {
+        c.addMouseListener(imageController);
+        c.addMouseMotionListener(imageController);
+        imageController.setEditor(c);
+        super.install(c);
+    }
+
+    @Override
+    public void deinstall(JEditorPane c) {
+        c.removeMouseListener(imageController);
+        c.removeMouseMotionListener(imageController);
+        imageController.setEditor(null);
+        super.deinstall(c);
+    }
+
+    @Override
+    public Document createDefaultDocument() {
+        return new EnhancedHTMLDocument(getStyleSheet());
+    }
+}
+
+class EnhancedHTMLDocument extends HTMLDocument{
+    public EnhancedHTMLDocument(){
+        this(new StyleSheet());
+    }
+
+    public EnhancedHTMLDocument(StyleSheet ss){
+        super(ss);
+    }
+
+    public void hackWriteLock(){
+        writeLock();
+    }
+
+    public void hackWriteUnlock(){
+        writeUnlock();
+    }
+}
+
