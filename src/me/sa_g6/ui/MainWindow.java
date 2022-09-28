@@ -5,15 +5,17 @@ import me.sa_g6.formatting.LeftAlignment;
 import me.sa_g6.formatting.RightAlignment;
 import me.sa_g6.ui.widgets.AlignmentMenuItem;
 import me.sa_g6.ui.widgets.BackgroundColorMenuItem;
+//import me.sa_g6.ui.widgets.EditMenuItem;
 import me.sa_g6.ui.widgets.Tab;
+import java.awt.event.KeyEvent;
 
 import javax.swing.*;
-import javax.swing.text.*;
-import javax.swing.text.html.HTMLDocument;
-import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.DefaultEditorKit;
 import java.awt.*;
-import java.io.IOException;
-
+import java.awt.datatransfer.Clipboard;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionListener;
 public class MainWindow extends JFrame {
     JTabbedPane tabs = new JTabbedPane();
     JMenuBar menuBar = new JMenuBar();
@@ -42,6 +44,29 @@ public class MainWindow extends JFrame {
         formatMenu.add(new AlignmentMenuItem(this,"Align Right", new RightAlignment()));
         formatMenu.add(new AlignmentMenuItem(this,"Align Center", new CenterAlignment()));
         menuBar.add(formatMenu);
+
+
+       JMenuItem menuItem = null;
+        JMenu mainMenu = new JMenu("Edit");
+        mainMenu.setMnemonic(KeyEvent.VK_E);
+
+        menuItem = new JMenuItem(new DefaultEditorKit.CutAction());
+        menuItem.setText("Cut");
+        menuItem.setMnemonic(KeyEvent.VK_T);
+        mainMenu.add(menuItem);
+
+        menuItem = new JMenuItem(new DefaultEditorKit.CopyAction());
+        menuItem.setText("Copy");
+        menuItem.setMnemonic(KeyEvent.VK_C);
+        mainMenu.add(menuItem);
+
+        menuItem = new JMenuItem(new DefaultEditorKit.PasteAction());
+        menuItem.setText("Paste");
+        menuItem.setMnemonic(KeyEvent.VK_P);
+        mainMenu.add(menuItem);
+        menuBar.add(mainMenu);
+
+
 
         JMenu colorMenu = new JMenu("Color");
         colorMenu.add(new BackgroundColorMenuItem(this,"BG-Red",Color.red));
