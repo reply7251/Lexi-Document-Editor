@@ -7,6 +7,9 @@ import me.sa_g6.ui.widgets.AlignmentMenuItem;
 import me.sa_g6.ui.widgets.BackgroundColorMenuItem;
 //import me.sa_g6.ui.widgets.EditMenuItem;
 import me.sa_g6.ui.widgets.Tab;
+import me.sa_g6.utils.BetterAction;
+import me.sa_g6.utils.Prov;
+
 import java.awt.event.KeyEvent;
 
 import javax.swing.*;
@@ -16,6 +19,8 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionListener;
+import java.util.ServiceLoader;
+
 public class MainWindow extends JFrame {
     JTabbedPane tabs = new JTabbedPane();
     JMenuBar menuBar = new JMenuBar();
@@ -45,6 +50,7 @@ public class MainWindow extends JFrame {
         formatMenu.add(new AlignmentMenuItem(this,"Align Center", new CenterAlignment()));
         menuBar.add(formatMenu);
 
+        Prov<JTextPane> prov = ()-> ((Tab)tabs.getSelectedComponent()).getEditor();
 
         JMenuItem menuItem ;
         JMenu editmenu = new JMenu("Edit");
@@ -55,12 +61,12 @@ public class MainWindow extends JFrame {
         menuItem.setMnemonic(KeyEvent.VK_T);
         editmenu.add(menuItem);
 
-        menuItem = new JMenuItem(new DefaultEditorKit.CopyAction());
+        menuItem = new JMenuItem(new BetterAction.CopyAction(prov));
         menuItem.setText("Copy");
         menuItem.setMnemonic(KeyEvent.VK_C);
         editmenu.add(menuItem);
 
-        menuItem = new JMenuItem(new DefaultEditorKit.PasteAction());
+        menuItem = new JMenuItem(new BetterAction.PasteAction(prov));
         menuItem.setText("Paste");
         menuItem.setMnemonic(KeyEvent.VK_P);
         editmenu.add(menuItem);

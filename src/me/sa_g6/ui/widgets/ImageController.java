@@ -38,7 +38,7 @@ public class ImageController extends MouseAdapter implements MouseMotionListener
         doc.hackWriteLock();
         attributes.addAttribute("id","resizing");
         doc.hackWriteUnlock();
-        editor.setText(editor.getText());
+        editor.setText(editor.getText().replaceAll("\n","</br>"));
 
         if(resizer != null){
             resizer.elem = doc.getElement("resizing");

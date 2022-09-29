@@ -1,5 +1,6 @@
 package me.sa_g6.ui.widgets;
 
+import me.sa_g6.utils.BetterAction;
 import me.sa_g6.utils.ClipboardUtils;
 import me.sa_g6.utils.CombinedAction;
 import me.sa_g6.utils.ImageUtils;
@@ -37,37 +38,17 @@ public class Tab extends JPanel {
         JScrollPane pane = new JScrollPane(editor);
         layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(pane));
         layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(pane));
-
         KeyStroke ctrlV = KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK);
         final ActionListener ctrlVAction = editor.getActionForKeyStroke(ctrlV);
         editor.unregisterKeyboardAction(ctrlV);
-        editor.registerKeyboardAction(new CombinedAction(ctrlVAction, (e)->{
-            Object src = e.getSource();
-            if (src instanceof JComponent c) {
-                Clipboard cb = c.getToolkit().getSystemClipboard();
-                Transferable trans = cb.getContents(null);
-                for(DataFlavor dataFlavor : trans.getTransferDataFlavors()){
-                    try {
-                        Object o = trans.getTransferData(dataFlavor);
-                        if(o instanceof BufferedImage bi){
-                            insertImage(editor.getCaretPosition(), bi);
-                        }
-                    } catch (UnsupportedFlavorException | IOException ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            }
-        }), ctrlV, JComponent.WHEN_FOCUSED);
+        editor.registerKeyboardAction(new BetterAction.PasteAction(), ctrlV, JComponent.WHEN_FOCUSED);
+        KeyStroke ctrlC = KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK);
+        editor.unregisterKeyboardAction(ctrlC);
+        editor.registerKeyboardAction(new BetterAction.CopyAction(), ctrlC, JComponent.WHEN_FOCUSED);
+
 
         final JMenuItem copy = new JMenuItem("Copy      CTRL+C");
-        copy.addActionListener(e -> {
-            String selected = Tab.this.editor.getSelectedText();
-
-            if(selected==null)
-                return;
-            StringSelection clipString = new StringSelection(selected);
-            ClipboardUtils.getClipboard().setContents(clipString,clipString);
-        });
+        copy.addActionListener(new BetterAction.CopyAction());
 
         editor.getDocument().getRootElements();
 
@@ -85,14 +66,7 @@ public class Tab extends JPanel {
     }
 
     public void insertHtml(int offset, String html){
-        HTMLEditorKit kit = (HTMLEditorKit) getEditor().getEditorKit();
-        HTMLDocument doc = (HTMLDocument) getEditor().getStyledDocument();
-
-        try {
-            kit.insertHTML(doc, offset, html, 0, 0, null);
-        } catch (BadLocationException | IOException e) {
-            e.printStackTrace();
-        }
+        BetterAction.insertHtml(editor, offset, html);
     }
 
     public void insertTable(int offset, int rowCount, int colCount){
@@ -109,8 +83,7 @@ public class Tab extends JPanel {
     }
 
     public void insertImage(int offset, BufferedImage image){
-        URL url = ImageUtils.putImage(image);
-        insertHtml(offset, "<img src=\"%s\" width=\"%d\" height=\"%d\"></img>".formatted(url, image.getWidth(), image.getHeight()));
+        BetterAction.insertImage(editor, offset, image);
     }
 }
 
@@ -137,6 +110,10 @@ class EnhancedHTMLEditorKit extends HTMLEditorKit{
     public Document createDefaultDocument() {
         return new EnhancedHTMLDocument(getStyleSheet());
     }
+
+    public Parser hackGetParser(){
+        return getParser();
+    }
 }
 
 class EnhancedHTMLDocument extends HTMLDocument{
@@ -146,6 +123,7 @@ class EnhancedHTMLDocument extends HTMLDocument{
 
     public EnhancedHTMLDocument(StyleSheet ss){
         super(ss);
+        setParser(new EnhancedHTMLEditorKit().hackGetParser());
     }
 
     public void hackWriteLock(){

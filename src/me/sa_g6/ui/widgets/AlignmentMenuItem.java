@@ -10,7 +10,7 @@ public class AlignmentMenuItem extends IMenuItem{
     public AlignmentMenuItem(MainWindow mw, String text, Alignment alignment) {
         super(text, (e)->{
             if(mw.getCurrentTab() instanceof Tab tab){
-                alignment.perform(tab.getEditor().getStyledDocument());
+                alignment.perform(tab.getEditor());
             }
         });
     }
