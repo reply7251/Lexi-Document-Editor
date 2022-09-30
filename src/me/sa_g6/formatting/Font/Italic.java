@@ -8,6 +8,6 @@ public class Italic implements Font{
     public void perform(JTextPane editor){
         SimpleAttributeSet attr = new SimpleAttributeSet();
         StyleConstants.setItalic(attr, true);
-        editor.setCharacterAttributes(attr, true);
+        editor.setCharacterAttributes(attr, false);
     }
 }

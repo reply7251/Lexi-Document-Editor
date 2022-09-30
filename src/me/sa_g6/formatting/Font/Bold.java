@@ -8,6 +8,6 @@ public class Bold implements Font{
     public void perform(JTextPane editor){
         SimpleAttributeSet attr = new SimpleAttributeSet();
         StyleConstants.setBold(attr, true);
-        editor.setCharacterAttributes(attr, true);
+        editor.setCharacterAttributes(attr, false);
     }
 }

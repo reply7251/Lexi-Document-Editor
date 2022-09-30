@@ -7,6 +7,6 @@ public class Underline implements Font{
     public void perform(JTextPane editor){
         SimpleAttributeSet attr = new SimpleAttributeSet();
         StyleConstants.setUnderline(attr, true);
-        editor.setCharacterAttributes(attr, true);
+        editor.setCharacterAttributes(attr, false);
     }
 }
