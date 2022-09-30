@@ -6,6 +6,7 @@ import javax.swing.*;
 import javax.swing.text.*;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
+import javax.swing.undo.CompoundEdit;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
@@ -36,11 +37,17 @@ public class ImageResizer extends JComponent {
     @Override
     public void setBounds(int x, int y, int width, int height) {
         super.setBounds(x, y, width, height);
-        HTMLDocument.RunElement attributes = (HTMLDocument.RunElement) elem.getAttributes();
-        EnhancedHTMLDocument doc = (EnhancedHTMLDocument) elem.getDocument();
-        doc.hackWriteLock();
-        attributes.addAttribute(HTML.Attribute.WIDTH, String.valueOf(width));
-        attributes.addAttribute(HTML.Attribute.HEIGHT, String.valueOf(height));
-        doc.hackWriteUnlock();
+        HTMLDocument.RunElement attrs = (HTMLDocument.RunElement) elem.getAttributes();
+        if(!attrs.getAttribute(HTML.Attribute.WIDTH).equals(String.valueOf(width))
+                || !attrs.getAttribute(HTML.Attribute.HEIGHT).equals(String.valueOf(height))){
+            EnhancedHTMLDocument doc = (EnhancedHTMLDocument) elem.getDocument();
+            if(doc.compoundEdit == null){
+                doc.compoundEdit = new CompoundEdit();
+            }
+            doc.hackWriteLock();
+            attrs.addAttribute(HTML.Attribute.WIDTH, String.valueOf(width));
+            attrs.addAttribute(HTML.Attribute.HEIGHT, String.valueOf(height));
+            doc.hackWriteUnlock();
+        }
     }
 }

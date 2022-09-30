@@ -1,18 +1,12 @@
 package me.sa_g6.ui.widgets;
 
 import me.sa_g6.utils.BetterAction;
-import me.sa_g6.utils.ClipboardUtils;
-import me.sa_g6.utils.CombinedAction;
 import me.sa_g6.utils.ImageUtils;
 
 import javax.swing.*;
-import javax.swing.text.*;
 import javax.swing.text.html.*;
-import java.awt.datatransfer.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.URL;
 
 public class Tab extends JPanel {
     JTextPane editor = new JTextPane();
@@ -25,7 +19,7 @@ public class Tab extends JPanel {
 
         //editor.setContentType("text/html");
         editor.setDocument(new EnhancedHTMLDocument());
-        editor.setEditorKit(new EnhancedHTMLEditorKit());
+        editor.setEditorKit(new EnhancedHTMLDocument.EnhancedHTMLEditorKit());
         ImageUtils.setCache(editor.getDocument());
         insertHtml(0,"<html><body></body></html>");
         HTMLDocument doc = (HTMLDocument) editor.getDocument();
@@ -39,7 +33,6 @@ public class Tab extends JPanel {
         layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(pane));
         layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(pane));
         KeyStroke ctrlV = KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK);
-        final ActionListener ctrlVAction = editor.getActionForKeyStroke(ctrlV);
         editor.unregisterKeyboardAction(ctrlV);
         editor.registerKeyboardAction(new BetterAction.PasteAction(), ctrlV, JComponent.WHEN_FOCUSED);
         KeyStroke ctrlC = KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK);
@@ -50,19 +43,24 @@ public class Tab extends JPanel {
         final JMenuItem copy = new JMenuItem("Copy      CTRL+C");
         copy.addActionListener(new BetterAction.CopyAction());
 
-        editor.getDocument().getRootElements();
-
         popup.add(copy);
         copy.setEnabled(true);
         editor.setComponentPopupMenu(popup);
+
+        KeyStroke ctrlZ = KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK);
+        KeyStroke ctrlY = KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK);
+        BetterAction.UndoManager undo = new BetterAction.UndoManager();
+        doc.addUndoableEditListener(undo);
+        editor.registerKeyboardAction(new BetterAction.UndoAction(undo),ctrlZ, JComponent.WHEN_FOCUSED);
+        editor.registerKeyboardAction(new BetterAction.RedoAction(undo),ctrlY, JComponent.WHEN_FOCUSED);
     }
 
     public JTextPane getEditor() {
         return editor;
     }
 
-    public HTMLDocument getDocument(){
-        return (HTMLDocument) editor.getDocument();
+    public EnhancedHTMLDocument getDocument(){
+        return (EnhancedHTMLDocument) editor.getDocument();
     }
 
     public void insertHtml(int offset, String html){
@@ -86,52 +84,3 @@ public class Tab extends JPanel {
         BetterAction.insertImage(editor, offset, image);
     }
 }
-
-class EnhancedHTMLEditorKit extends HTMLEditorKit{
-    ImageController imageController = new ImageController();
-
-    @Override
-    public void install(JEditorPane c) {
-        c.addMouseListener(imageController);
-        c.addMouseMotionListener(imageController);
-        imageController.setEditor(c);
-        super.install(c);
-    }
-
-    @Override
-    public void deinstall(JEditorPane c) {
-        c.removeMouseListener(imageController);
-        c.removeMouseMotionListener(imageController);
-        imageController.setEditor(null);
-        super.deinstall(c);
-    }
-
-    @Override
-    public Document createDefaultDocument() {
-        return new EnhancedHTMLDocument(getStyleSheet());
-    }
-
-    public Parser hackGetParser(){
-        return getParser();
-    }
-}
-
-class EnhancedHTMLDocument extends HTMLDocument{
-    public EnhancedHTMLDocument(){
-        this(new StyleSheet());
-    }
-
-    public EnhancedHTMLDocument(StyleSheet ss){
-        super(ss);
-        setParser(new EnhancedHTMLEditorKit().hackGetParser());
-    }
-
-    public void hackWriteLock(){
-        writeLock();
-    }
-
-    public void hackWriteUnlock(){
-        writeUnlock();
-    }
-}
-
