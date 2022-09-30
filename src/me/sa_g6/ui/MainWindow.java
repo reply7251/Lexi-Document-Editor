@@ -1,11 +1,15 @@
 package me.sa_g6.ui;
 
 import me.sa_g6.formatting.CenterAlignment;
+import me.sa_g6.formatting.Font.Bold;
+import me.sa_g6.formatting.Font.Italic;
+import me.sa_g6.formatting.Font.Underline;
 import me.sa_g6.formatting.LeftAlignment;
 import me.sa_g6.formatting.RightAlignment;
 import me.sa_g6.ui.widgets.AlignmentMenuItem;
 import me.sa_g6.ui.widgets.BackgroundColorMenuItem;
 //import me.sa_g6.ui.widgets.EditMenuItem;
+import me.sa_g6.ui.widgets.FontMenuItem;
 import me.sa_g6.ui.widgets.Tab;
 import me.sa_g6.utils.BetterAction;
 import me.sa_g6.utils.Prov;
@@ -49,6 +53,13 @@ public class MainWindow extends JFrame {
         formatMenu.add(new AlignmentMenuItem(this,"Align Right", new RightAlignment()));
         formatMenu.add(new AlignmentMenuItem(this,"Align Center", new CenterAlignment()));
         menuBar.add(formatMenu);
+
+        JMenu fontMenu = new JMenu("Font");
+        fontMenu.add(new FontMenuItem(this,"Bold", new Bold()));
+        fontMenu.add(new FontMenuItem(this,"italic", new Italic()));
+        fontMenu.add(new FontMenuItem(this,"underline", new Underline()));
+        menuBar.add(fontMenu);
+
 
         Prov<JTextPane> prov = ()-> ((Tab)tabs.getSelectedComponent()).getEditor();
 
