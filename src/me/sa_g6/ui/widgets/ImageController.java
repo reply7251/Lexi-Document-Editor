@@ -53,7 +53,7 @@ public class ImageController extends MouseAdapter implements MouseMotionListener
             img = img.substring(20,img.length()-19).trim();
             doc.remove(start,len);
             boolean mayHasNewLine = BetterAction.mayHasNewLine(editor,start);
-            BetterAction.insertHtml(editor,start,img, mayHasNewLine ? null : HTML.Tag.IMG);
+            BetterAction.insertHtml(editor,start,img, (mayHasNewLine) ? null : HTML.Tag.IMG);
             AbstractDocument.BranchElement parent = (AbstractDocument.BranchElement) doc.getElement("resizing").getParentElement();
             int index = parent.getElementIndex(start);
             if(parent.getElementCount() > index+1){
@@ -62,15 +62,6 @@ public class ImageController extends MouseAdapter implements MouseMotionListener
                     parent.replace(index+1,1,new Element[0]);
                 }
             }
-            /*
-            if(mayHasNewLine){
-
-                if(doc.getText(elem.getEndOffset(),1).equals("\n")){
-                    doc.remove(elem.getEndOffset(),1);
-                }
-            }
-
-             */
         } catch (IOException | BadLocationException ex) {
         }
 

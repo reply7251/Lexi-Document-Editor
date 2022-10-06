@@ -29,6 +29,7 @@ import java.util.ServiceLoader;
 public class MainWindow extends JFrame {
     JTabbedPane tabs = new JTabbedPane();
     JMenuBar menuBar = new JMenuBar();
+
     public MainWindow(){
         super("Lexi Document Editor");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -40,7 +41,7 @@ public class MainWindow extends JFrame {
     }
 
     void init(){
-        Tab tab1 = new Tab();
+        Tab tab1 = new Tab(true);
         tabs.add("new 1", tab1);
         tabs.add("new 2", new Tab());
 

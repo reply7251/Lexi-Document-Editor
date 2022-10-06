@@ -1,14 +1,13 @@
 package me.sa_g6.ui.widgets;
 
+import me.sa_g6.ui.view.HideableView;
 import me.sa_g6.utils.BetterAction;
 
 import javax.swing.*;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
-import javax.swing.text.Document;
-import javax.swing.text.html.HTMLDocument;
-import javax.swing.text.html.HTMLEditorKit;
-import javax.swing.text.html.StyleSheet;
+import javax.swing.text.*;
+import javax.swing.text.html.*;
 import javax.swing.undo.CompoundEdit;
 
 public class EnhancedHTMLDocument extends HTMLDocument {
@@ -41,6 +40,12 @@ public class EnhancedHTMLDocument extends HTMLDocument {
         }
     }
 
+    public void startEdit(){
+        if(compoundEdit == null){
+            compoundEdit = new CompoundEdit();
+        }
+    }
+
     public void finishEdit() {
         if (compoundEdit != null) {
             super.fireUndoableEditUpdate(new UndoableEditEvent(this, compoundEdit));
@@ -57,8 +62,26 @@ public class EnhancedHTMLDocument extends HTMLDocument {
         }
     }
 
+    static class HTMLBetterFactory extends HTMLEditorKit.HTMLFactory{
+        public View create(Element elem) {
+            AttributeSet attrs = elem.getAttributes();
+            Object elementName = attrs.getAttribute(AbstractDocument.ElementNameAttribute);
+            Object o = (elementName != null) ? null : attrs.getAttribute(StyleConstants.NameAttribute);
+            Object display = attrs.getAttribute(CSS.Attribute.DISPLAY);
+            if(display != null && display.toString().equals("none"))
+                return new HideableView(elem);
+            return super.create(elem);
+        }
+    }
+
     static class EnhancedHTMLEditorKit extends HTMLEditorKit {
         ImageController imageController = new ImageController();
+
+        private final HTMLEditorKit.HTMLFactory factory = new HTMLBetterFactory();
+        @Override
+        public ViewFactory getViewFactory() {
+            return factory;
+        }
 
         @Override
         public void install(JEditorPane c) {

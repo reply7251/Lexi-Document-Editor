@@ -41,9 +41,14 @@ public class BetterAction {
 
     public static void insertImage(JTextPane editor, int offset, BufferedImage image){
         URL url = ImageUtils.putImage(image);
+        EnhancedHTMLDocument doc = (EnhancedHTMLDocument) editor.getDocument();
+        doc.startEdit();
         insertHtml(editor,offset, "<img src=\"%s\" width=\"%d\" height=\"%d\">".formatted(url, image.getWidth(), image.getHeight())
             ,mayHasNewLine(editor, offset) ? null : HTML.Tag.IMG);
+        doc.finishEdit();
     }
+
+    //<div display: "inline-block">
 
     public static boolean mayHasNewLine(JTextPane editor, int offset){
         try {

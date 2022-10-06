@@ -1,10 +1,18 @@
 package me.sa_g6.ui.widgets;
 
+import me.sa_g6.ui.MainWindow;
 import me.sa_g6.utils.BetterAction;
 import me.sa_g6.utils.ImageUtils;
+import me.sa_g6.utils.StringUtils;
 
 import javax.swing.*;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.text.MutableAttributeSet;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 import javax.swing.text.html.*;
+import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 
@@ -13,6 +21,10 @@ public class Tab extends JPanel {
     JPopupMenu popup = new JPopupMenu();
 
     public Tab(){
+        this(false);
+    }
+
+    public Tab(boolean debug){
         super();
         GroupLayout layout = new GroupLayout(this);
         setLayout(layout);
@@ -30,8 +42,58 @@ public class Tab extends JPanel {
                 }
                 """);
         JScrollPane pane = new JScrollPane(editor);
-        layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(pane));
-        layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(pane));
+
+        if(debug){
+
+            JTextArea debug1 = new JTextArea();
+            debug1.setEditable(false);
+            JScrollPane debugPane1 = new JScrollPane(debug1);
+            debugPane1.getVerticalScrollBar().setUnitIncrement(16);
+
+            JTextPane debug2 = new JTextPane();
+            debug2.setEditable(false);
+            JPanel noWrapPanel = new JPanel(new BorderLayout());
+            noWrapPanel.add(debug2);
+            JScrollPane debugPane2 = new JScrollPane(noWrapPanel);
+            debugPane2.getVerticalScrollBar().setUnitIncrement(16);
+
+            MutableAttributeSet lineSpacing = new SimpleAttributeSet();
+            StyleConstants.setLineSpacing(lineSpacing, (float) -0.3);
+            debug2.setParagraphAttributes(lineSpacing, false);
+
+
+            editor.getDocument().addUndoableEditListener(new UndoableEditListener() {
+                @Override
+                public void undoableEditHappened(UndoableEditEvent e) {
+                    debug1.setText(editor.getText());
+                    StringBuilder builder = new StringBuilder();
+                    StringUtils.elementToString(builder, editor.getDocument().getDefaultRootElement());
+                    debug2.setText(builder.toString());
+                }
+            });
+            layout.setHorizontalGroup(
+                    layout.createSequentialGroup()
+                            .addComponent(pane).addGap(5)
+                            .addGroup(
+                                    layout.createParallelGroup()
+                                            .addComponent(debugPane1,100,200,300)
+                                            .addComponent(debugPane2,100,200,300)
+                            )
+            );
+            layout.setVerticalGroup(
+                    layout.createParallelGroup().addComponent(pane)
+                            .addGroup(
+                                    layout.createSequentialGroup()
+                                            .addComponent(debugPane1,100,200,1000)
+                                            .addGap(5)
+                                            .addComponent(debugPane2,100,200,1000)
+                            )
+            );
+
+        }else{
+            layout.setHorizontalGroup(layout.createParallelGroup().addComponent(pane));
+            layout.setVerticalGroup(layout.createParallelGroup().addComponent(pane));
+        }
         KeyStroke ctrlV = KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK);
         editor.unregisterKeyboardAction(ctrlV);
         editor.registerKeyboardAction(new BetterAction.PasteAction(), ctrlV, JComponent.WHEN_FOCUSED);

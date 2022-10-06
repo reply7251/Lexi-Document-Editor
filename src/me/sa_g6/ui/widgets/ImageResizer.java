@@ -14,7 +14,9 @@ import java.io.StringWriter;
 
 public class ImageResizer extends JComponent {
     Element elem;
+    ImageController controller;
     public ImageResizer(ImageController controller,Element element){
+        this.controller = controller;
         elem = element;
         setLayout(new BorderLayout());
         addMouseListener(controller);
@@ -41,9 +43,7 @@ public class ImageResizer extends JComponent {
         if(!attrs.getAttribute(HTML.Attribute.WIDTH).equals(String.valueOf(width))
                 || !attrs.getAttribute(HTML.Attribute.HEIGHT).equals(String.valueOf(height))){
             EnhancedHTMLDocument doc = (EnhancedHTMLDocument) elem.getDocument();
-            if(doc.compoundEdit == null){
-                doc.compoundEdit = new CompoundEdit();
-            }
+            doc.startEdit();
             doc.hackWriteLock();
             attrs.addAttribute(HTML.Attribute.WIDTH, String.valueOf(width));
             attrs.addAttribute(HTML.Attribute.HEIGHT, String.valueOf(height));
