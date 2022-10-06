@@ -8,6 +8,7 @@ import me.sa_g6.formatting.LeftAlignment;
 import me.sa_g6.formatting.RightAlignment;
 import me.sa_g6.ui.widgets.AlignmentMenuItem;
 import me.sa_g6.ui.widgets.BackgroundColorMenuItem;
+import me.sa_g6.ui.widgets.FontColorMenuItem;
 //import me.sa_g6.ui.widgets.EditMenuItem;
 import me.sa_g6.ui.widgets.FontMenuItem;
 import me.sa_g6.ui.widgets.Tab;
@@ -83,15 +84,22 @@ public class MainWindow extends JFrame {
         editmenu.add(menuItem);
         menuBar.add(editmenu);
 
-
-
-        JMenu colorMenu = new JMenu("Color");
-        colorMenu.add(new BackgroundColorMenuItem(this,"BG-Red",Color.red));
-        colorMenu.add(new BackgroundColorMenuItem(this,"BG-Green",Color.green));
-        colorMenu.add(new BackgroundColorMenuItem(this,"BG-Blue",Color.blue));
-        colorMenu.add(new BackgroundColorMenuItem(this,"BG-Yellow",Color.yellow));
-        colorMenu.add(new BackgroundColorMenuItem(this,"BG-Orange",Color.orange));
-        menuBar.add(colorMenu);
+        JMenu FontColorMenu = new JMenu("Font color");
+        FontColorMenu.add(new FontColorMenuItem(this,"Red",Color.red));
+        FontColorMenu.add(new FontColorMenuItem(this,"Green",Color.green));
+        FontColorMenu.add(new FontColorMenuItem(this,"Blue",Color.blue));
+        FontColorMenu.add(new FontColorMenuItem(this,"Black",Color.black));
+        FontColorMenu.add(new FontColorMenuItem(this,"White",Color.white));
+        menuBar.add(FontColorMenu);
+        
+        JMenu BackgroundColorMenu = new JMenu("Background Color");
+        BackgroundColorMenu.add(new BackgroundColorMenuItem(this,"Red",Color.red));
+        BackgroundColorMenu.add(new BackgroundColorMenuItem(this,"Green",Color.green));
+        BackgroundColorMenu.add(new BackgroundColorMenuItem(this,"Blue",Color.blue));
+        BackgroundColorMenu.add(new BackgroundColorMenuItem(this,"Yellow",Color.yellow));
+        BackgroundColorMenu.add(new BackgroundColorMenuItem(this,"Orange",Color.orange));
+        menuBar.add(BackgroundColorMenu);
+        
         setJMenuBar(menuBar);
 
         tab1.insertTable(tab1.getEditor().getCaretPosition(),2,3);
