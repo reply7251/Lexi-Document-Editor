@@ -1,5 +1,7 @@
 package me.sa_g6.utils;
 
+import me.sa_g6.iterator.ElementIterator;
+
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -34,11 +36,12 @@ public class StringUtils {
         if(element instanceof AbstractDocument.BranchElement elem){
             builder.append(prefix).append("BranchElement<").append(elem.getName()).append(">:\n");
             attributesToString(builder, elem.getAttributes(), childrenPrefix + "│    ");
-            for(int i = 0; i < elem.getElementCount(); i++){
-                if(i == elem.getElementCount()-1){
-                    elementToString(builder, elem.getElement(i),childrenPrefix + "└──", childrenPrefix+"      ");
+            for(Iterator<Element> iterator = new ElementIterator(elem); iterator.hasNext(); ){
+                Element e = iterator.next();
+                if(iterator.hasNext()){
+                    elementToString(builder, e,childrenPrefix + "├──", childrenPrefix+"│    ");
                 }else {
-                    elementToString(builder, elem.getElement(i),childrenPrefix + "├──", childrenPrefix+"│    ");
+                    elementToString(builder, e,childrenPrefix + "└──", childrenPrefix+"      ");
                 }
             }
         }else if(element instanceof AbstractDocument.LeafElement elem){

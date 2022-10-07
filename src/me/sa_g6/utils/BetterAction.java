@@ -1,13 +1,13 @@
 package me.sa_g6.utils;
 
+import me.sa_g6.iterator.ElementIterator;
 import me.sa_g6.ui.widgets.EnhancedHTMLDocument;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
-import javax.swing.text.AbstractDocument;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.*;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
@@ -169,7 +169,7 @@ public class BetterAction {
 
     public static class UndoManager extends AbstractUndoableEdit implements UndoableEditListener{
         String lastEditName = null;
-        ArrayList<CompoundEdit> edits = new ArrayList<>();
+        ArrayList<UndoableEdit> edits = new ArrayList<>();
         MyCompoundEdit current;
         int pointer=-1;
         boolean pause = false;
@@ -208,8 +208,8 @@ public class BetterAction {
                     lastEditName = edit.getPresentationName();
                 } catch (BadLocationException e1) {
                 }
-            }else if(e.getEdit() instanceof CompoundEdit edit){
-                edits.add(edit);
+            }else {
+                edits.add(e.getEdit());
                 pointer++;
                 current = null;
             }
@@ -229,7 +229,7 @@ public class BetterAction {
                 throw new CannotUndoException();
             }
 
-            CompoundEdit u = edits.get(pointer);
+            UndoableEdit u = edits.get(pointer);
             u.undo();
             pointer--;
         }
@@ -240,7 +240,7 @@ public class BetterAction {
             }
 
             pointer++;
-            CompoundEdit u = edits.get(pointer);
+            UndoableEdit u = edits.get(pointer);
             u.redo();
         }
 
@@ -285,6 +285,36 @@ public class BetterAction {
 
         public boolean canRedo() {
             return edits.size() > 0 && isUnDone;
+        }
+    }
+
+    public static class AttributesChangeEdit extends AbstractUndoableEdit{
+        AttributeSet before, after;
+        Element element;
+        public AttributesChangeEdit(Element e, AttributeSet before){
+            this.before = before;
+            after = e.getAttributes().copyAttributes();
+            element = e;
+        }
+        @Override
+        public void undo() throws CannotUndoException {
+            super.undo();
+            HTMLDocument.RunElement current = (HTMLDocument.RunElement) element.getAttributes();
+            current.removeAttributes(after);
+            current.addAttributes(before);
+        }
+
+        @Override
+        public void redo() throws CannotRedoException {
+            super.redo();
+            HTMLDocument.RunElement current = (HTMLDocument.RunElement) element;
+            current.removeAttributes(before);
+            current.addAttributes(after);
+        }
+
+        @Override
+        public String getPresentationName() {
+            return "Attribute Change";
         }
     }
 }

@@ -43,7 +43,6 @@ public class ImageResizer extends JComponent {
         if(!attrs.getAttribute(HTML.Attribute.WIDTH).equals(String.valueOf(width))
                 || !attrs.getAttribute(HTML.Attribute.HEIGHT).equals(String.valueOf(height))){
             EnhancedHTMLDocument doc = (EnhancedHTMLDocument) elem.getDocument();
-            doc.startEdit();
             doc.hackWriteLock();
             attrs.addAttribute(HTML.Attribute.WIDTH, String.valueOf(width));
             attrs.addAttribute(HTML.Attribute.HEIGHT, String.valueOf(height));

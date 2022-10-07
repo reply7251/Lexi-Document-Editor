@@ -6,6 +6,8 @@ import me.sa_g6.utils.ImageUtils;
 import me.sa_g6.utils.StringUtils;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.text.MutableAttributeSet;
@@ -61,10 +63,23 @@ public class Tab extends JPanel {
             StyleConstants.setLineSpacing(lineSpacing, (float) -0.3);
             debug2.setParagraphAttributes(lineSpacing, false);
 
-
-            editor.getDocument().addUndoableEditListener(new UndoableEditListener() {
+            editor.getDocument().addDocumentListener(new DocumentListener() {
                 @Override
-                public void undoableEditHappened(UndoableEditEvent e) {
+                public void insertUpdate(DocumentEvent e) {
+                    update();
+                }
+
+                @Override
+                public void removeUpdate(DocumentEvent e) {
+                    update();
+                }
+
+                @Override
+                public void changedUpdate(DocumentEvent e) {
+                    update();
+                }
+
+                void update(){
                     debug1.setText(editor.getText());
                     StringBuilder builder = new StringBuilder();
                     StringUtils.elementToString(builder, editor.getDocument().getDefaultRootElement());

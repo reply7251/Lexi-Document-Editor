@@ -4,6 +4,8 @@ package me.sa_g6.ui.widgets;
 import me.sa_g6.utils.BetterAction;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.UndoableEditEvent;
 import javax.swing.plaf.TextUI;
 import javax.swing.text.*;
 import javax.swing.text.html.HTML;
@@ -27,6 +29,7 @@ public class ImageController extends MouseAdapter implements MouseMotionListener
     int cursor;
     private Point startPos = null;
     private Dimension startSize = null;
+    private AttributeSet startAttrs = null;
 
     private final transient Position.Bias[] bias = new Position.Bias[1];
 
@@ -39,33 +42,9 @@ public class ImageController extends MouseAdapter implements MouseMotionListener
 
     public void updateResizer(){
         EnhancedHTMLDocument doc = (EnhancedHTMLDocument) editor.getDocument();
-        HTMLDocument.RunElement attributes = (HTMLDocument.RunElement) resizer.elem.getAttributes();
-        doc.hackWriteLock();
-        attributes.removeAttribute(HTML.Attribute.ID);
-        attributes.addAttribute(HTML.Attribute.ID,"resizing");
-        doc.hackWriteUnlock();
         Element elem = resizer.elem;
         int start = elem.getStartOffset(), len = elem.getEndOffset() - start;
-        StringWriter writer = new StringWriter();
-        try {
-            editor.getEditorKit().write(writer, elem.getDocument(),start, len);
-            String img = writer.toString();
-            img = img.substring(20,img.length()-19).trim();
-            doc.remove(start,len);
-            boolean mayHasNewLine = BetterAction.mayHasNewLine(editor,start);
-            BetterAction.insertHtml(editor,start,img, (mayHasNewLine) ? null : HTML.Tag.IMG);
-            AbstractDocument.BranchElement parent = (AbstractDocument.BranchElement) doc.getElement("resizing").getParentElement();
-            int index = parent.getElementIndex(start);
-            if(parent.getElementCount() > index+1){
-                Object o = parent.getElement(index+1).getAttributes().getAttribute("CR");
-                if(o != null && (boolean) o){
-                    parent.replace(index+1,1,new Element[0]);
-                }
-            }
-        } catch (IOException | BadLocationException ex) {
-        }
-
-        resizer.elem = doc.getElement("resizing");
+        doc.hackFireChangedUpdate(doc.new DefaultDocumentEvent(start, len, DocumentEvent.EventType.CHANGE));
     }
 
     @Override
@@ -146,6 +125,7 @@ public class ImageController extends MouseAdapter implements MouseMotionListener
             cursor = border.getCursor(e);
             startSize = resizer.getSize();
             startPos = e.getPoint();
+            startAttrs = resizer.elem.getAttributes().copyAttributes();
 
             resizer.repaint();
         }
@@ -153,16 +133,24 @@ public class ImageController extends MouseAdapter implements MouseMotionListener
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        startSize = null;
-        startPos = null;
         if(resizer != null){
             HTMLDocument.RunElement attributes = (HTMLDocument.RunElement) resizer.elem.getAttributes();
             EnhancedHTMLDocument doc = (EnhancedHTMLDocument) editor.getDocument();
             doc.hackWriteLock();
             attributes.removeAttribute(HTML.Attribute.ID);
             doc.hackWriteUnlock();
-            doc.finishEdit();
+            Element elem = resizer.elem;
+            int start = elem.getStartOffset(), len = elem.getEndOffset() - start;
+
+            AbstractDocument.DefaultDocumentEvent event = doc.new DefaultDocumentEvent(start, len, DocumentEvent.EventType.CHANGE);
+            event.addEdit(new BetterAction.AttributesChangeEdit(elem, startAttrs));
+            doc.fireUndoableEditUpdate(new UndoableEditEvent(this, event));
+
+            event.end();
+
         }
+        startSize = null;
+        startPos = null;
     }
 
     @Override

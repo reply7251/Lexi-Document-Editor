@@ -24,6 +24,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionListener;
+import java.util.Iterator;
 import java.util.ServiceLoader;
 
 public class MainWindow extends JFrame {

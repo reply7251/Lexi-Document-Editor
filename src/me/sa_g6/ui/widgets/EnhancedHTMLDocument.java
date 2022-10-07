@@ -4,6 +4,7 @@ import me.sa_g6.ui.view.HideableView;
 import me.sa_g6.utils.BetterAction;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.text.*;
@@ -29,6 +30,10 @@ public class EnhancedHTMLDocument extends HTMLDocument {
 
     public void hackWriteUnlock() {
         writeUnlock();
+    }
+
+    public void hackFireChangedUpdate(DocumentEvent e){
+        fireChangedUpdate(e);
     }
 
     @Override
