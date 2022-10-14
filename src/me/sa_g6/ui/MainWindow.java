@@ -11,6 +11,7 @@ import me.sa_g6.utils.Prov;
 
 import java.awt.event.KeyEvent;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.SimpleAttributeSet;
@@ -20,8 +21,15 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.ServiceLoader;
+
+import static javax.swing.JOptionPane.showMessageDialog;
 
 public class MainWindow extends JFrame {
     JTabbedPane tabs = new JTabbedPane();
@@ -43,8 +51,10 @@ public class MainWindow extends JFrame {
         tabs.add("new 2", new Tab());
 
         JMenu fileMenu = new JMenu("File");
-        JMenuItem item = new JMenuItem("Open...");
+        JMenuItem item = new JMenuItem("Open");
+        JMenuItem item2 = new JMenuItem("Insert Picture");
         fileMenu.add(item);
+        fileMenu.add(item2);
         menuBar.add(fileMenu);
 
         JMenu formatMenu = new JMenu("Format");
@@ -107,7 +117,53 @@ public class MainWindow extends JFrame {
 
         tab1.insertTable(tab1.getEditor().getCaretPosition(),2,3);
 
-
+        item.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setCurrentDirectory(new File((System.getProperty("user.home"))));
+                int d = fileChooser.showSaveDialog(null);
+                if (d == JFileChooser.APPROVE_OPTION) {
+                    File file = fileChooser.getSelectedFile();
+                    String filepath = file.getPath();
+                    try {
+                        BufferedReader bufferedReader = new BufferedReader(new FileReader(filepath));
+                        String str1 = "", str2 = "";
+                        while ((str1 = bufferedReader.readLine())!= null) {
+                            str2 = str2 + str1 + "\n";
+                        }
+                        if(getCurrentTab() instanceof Tab tab){
+                            BetterAction.insertHtml(tab.getEditor(), tab.getEditor().getCaretPosition(), str2);
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                } else {
+                    showMessageDialog(null, "Unable to insert file");
+                }
+            }
+        });
+        item2.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser2 = new JFileChooser();
+                fileChooser2.setCurrentDirectory(new File(System.getProperty("user.home")));
+                int i = fileChooser2.showSaveDialog(null);
+                if (i == JFileChooser.APPROVE_OPTION) {
+                    File file = fileChooser2.getSelectedFile();
+                    try {
+                        BufferedImage image = ImageIO.read((file)); //new BufferedImage(filepath);
+                        ImageIO.write(image,"png", file);
+                        if(getCurrentTab() instanceof Tab tab){
+                            BetterAction.insertImage(tab.getEditor(), tab.getEditor().getCaretPosition(), image);
+                        }
+                    } catch (IOException ex) {
+                        ex.printStackTrace(); //throw new RuntimeException(ex);
+                    }
+                } else {
+                    showMessageDialog(null, "Unable to insert picture");
+                }
+            }
+        });
     }
 
     public Component getCurrentTab(){
