@@ -1,6 +1,6 @@
 package me.sa_g6.ui.widgets;
 
-import me.sa_g6.ui.view.HideableView;
+import me.sa_g6.ui.view.HideableImageView;
 import me.sa_g6.utils.BetterAction;
 
 import javax.swing.*;
@@ -70,11 +70,9 @@ public class EnhancedHTMLDocument extends HTMLDocument {
     static class HTMLBetterFactory extends HTMLEditorKit.HTMLFactory{
         public View create(Element elem) {
             AttributeSet attrs = elem.getAttributes();
-            Object elementName = attrs.getAttribute(AbstractDocument.ElementNameAttribute);
-            Object o = (elementName != null) ? null : attrs.getAttribute(StyleConstants.NameAttribute);
-            Object display = attrs.getAttribute(CSS.Attribute.DISPLAY);
-            if(display != null && display.toString().equals("none"))
-                return new HideableView(elem);
+            if(elem.getName().equals("img")){
+                return new HideableImageView(elem);
+            }
             return super.create(elem);
         }
     }

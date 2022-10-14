@@ -7,11 +7,9 @@ import javax.swing.*;
 import java.awt.event.ActionListener;
 
 public class AlignmentMenuItem extends IMenuItem{
-    public AlignmentMenuItem(MainWindow mw, String text, Alignment alignment) {
+    public AlignmentMenuItem(String text, Alignment alignment) {
         super(text, (e)->{
-            if(mw.getCurrentTab() instanceof Tab tab){
-                alignment.perform(tab.getEditor());
-            }
+                alignment.perform(getTab().getEditor());
         });
     }
 }

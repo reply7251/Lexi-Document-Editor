@@ -1,5 +1,7 @@
 package me.sa_g6.ui.widgets;
 
+import me.sa_g6.ui.MainWindow;
+
 import javax.swing.*;
 import java.awt.event.ActionListener;
 
@@ -8,5 +10,9 @@ public abstract class IMenuItem extends JMenuItem {
         super(text);
 
         addActionListener(listener);
+    }
+
+    protected static final Tab getTab(){
+        return (Tab) MainWindow.getInstance().getCurrentTab();
     }
 }

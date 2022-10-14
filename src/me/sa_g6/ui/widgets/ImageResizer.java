@@ -1,6 +1,7 @@
 package me.sa_g6.ui.widgets;
 
 import me.sa_g6.utils.ClipboardUtils;
+import me.sa_g6.utils.Size;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -38,6 +39,22 @@ public class ImageResizer extends JComponent {
 
     @Override
     public void setBounds(int x, int y, int width, int height) {
+        super.setBounds(x, y, width, height);
+        HTMLDocument.RunElement attrs = (HTMLDocument.RunElement) elem.getAttributes();
+        if(!attrs.getAttribute(HTML.Attribute.WIDTH).equals(String.valueOf(width))
+                || !attrs.getAttribute(HTML.Attribute.HEIGHT).equals(String.valueOf(height))){
+            EnhancedHTMLDocument doc = (EnhancedHTMLDocument) elem.getDocument();
+            doc.hackWriteLock();
+            attrs.addAttribute(HTML.Attribute.WIDTH, String.valueOf(width));
+            attrs.addAttribute(HTML.Attribute.HEIGHT, String.valueOf(height));
+            doc.hackWriteUnlock();
+        }
+    }
+
+    public void setBounds(Size<Integer> size){
+        int x = getX(), y = getY();
+        int width = size.getWidth(), height = size.getHeight();
+
         super.setBounds(x, y, width, height);
         HTMLDocument.RunElement attrs = (HTMLDocument.RunElement) elem.getAttributes();
         if(!attrs.getAttribute(HTML.Attribute.WIDTH).equals(String.valueOf(width))

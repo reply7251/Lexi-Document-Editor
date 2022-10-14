@@ -32,10 +32,11 @@ import java.util.ServiceLoader;
 import static javax.swing.JOptionPane.showMessageDialog;
 
 public class MainWindow extends JFrame {
+    private static MainWindow mw = null;
     JTabbedPane tabs = new JTabbedPane();
     JMenuBar menuBar = new JMenuBar();
 
-    public MainWindow(){
+    private MainWindow(){
         super("Lexi Document Editor");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         getContentPane().add(tabs);
@@ -58,15 +59,15 @@ public class MainWindow extends JFrame {
         menuBar.add(fileMenu);
 
         JMenu formatMenu = new JMenu("Format");
-        formatMenu.add(new AlignmentMenuItem(this,"Align left", new LeftAlignment()));
-        formatMenu.add(new AlignmentMenuItem(this,"Align Right", new RightAlignment()));
-        formatMenu.add(new AlignmentMenuItem(this,"Align Center", new CenterAlignment()));
+        formatMenu.add(new AlignmentMenuItem("Align left", new LeftAlignment()));
+        formatMenu.add(new AlignmentMenuItem("Align Right", new RightAlignment()));
+        formatMenu.add(new AlignmentMenuItem("Align Center", new CenterAlignment()));
         menuBar.add(formatMenu);
 
         JMenu fontMenu = new JMenu("Font");
-        fontMenu.add(new FontMenuItem(this,"Bold", new Bold()));
-        fontMenu.add(new FontMenuItem(this,"italic", new Italic()));
-        fontMenu.add(new FontMenuItem(this,"underline", new Underline()));
+        fontMenu.add(new FontMenuItem("Bold", new Bold()));
+        fontMenu.add(new FontMenuItem("italic", new Italic()));
+        fontMenu.add(new FontMenuItem("underline", new Underline()));
         menuBar.add(fontMenu);
 
 
@@ -93,24 +94,24 @@ public class MainWindow extends JFrame {
         menuBar.add(editmenu);
 
         JMenu FontColorMenu = new JMenu("Font color");
-        FontColorMenu.add(new FontColorMenuItem(this,"Red",Color.red));
-        FontColorMenu.add(new FontColorMenuItem(this,"Green",Color.green));
-        FontColorMenu.add(new FontColorMenuItem(this,"Blue",Color.blue));
-        FontColorMenu.add(new FontColorMenuItem(this,"Black",Color.black));
-        FontColorMenu.add(new FontColorMenuItem(this,"White",Color.white));
+        FontColorMenu.add(new FontColorMenuItem("Red",Color.red));
+        FontColorMenu.add(new FontColorMenuItem("Green",Color.green));
+        FontColorMenu.add(new FontColorMenuItem("Blue",Color.blue));
+        FontColorMenu.add(new FontColorMenuItem("Black",Color.black));
+        FontColorMenu.add(new FontColorMenuItem("White",Color.white));
         menuBar.add(FontColorMenu);
         
         JMenu BackgroundColorMenu = new JMenu("Background Color");
-        BackgroundColorMenu.add(new BackgroundColorMenuItem(this,"Red",Color.red));
-        BackgroundColorMenu.add(new BackgroundColorMenuItem(this,"Green",Color.green));
-        BackgroundColorMenu.add(new BackgroundColorMenuItem(this,"Blue",Color.blue));
-        BackgroundColorMenu.add(new BackgroundColorMenuItem(this,"Yellow",Color.yellow));
-        BackgroundColorMenu.add(new BackgroundColorMenuItem(this,"Orange",Color.orange));
+        BackgroundColorMenu.add(new BackgroundColorMenuItem("Red",Color.red));
+        BackgroundColorMenu.add(new BackgroundColorMenuItem("Green",Color.green));
+        BackgroundColorMenu.add(new BackgroundColorMenuItem("Blue",Color.blue));
+        BackgroundColorMenu.add(new BackgroundColorMenuItem("Yellow",Color.yellow));
+        BackgroundColorMenu.add(new BackgroundColorMenuItem("Orange",Color.orange));
         menuBar.add(BackgroundColorMenu);
 
         JMenu DisplayModeMenu = new JMenu("DisplayMode");
-        DisplayModeMenu.add(new DisplayModeMenuItem(this,"FULL",new FullDisplayMode()));
-        DisplayModeMenu.add(new DisplayModeMenuItem(this,"TextOnly",new TextOnlyDisplayMode()));
+        DisplayModeMenu.add(new DisplayModeMenuItem("FULL",new FullDisplayMode()));
+        DisplayModeMenu.add(new DisplayModeMenuItem("TextOnly",new TextOnlyDisplayMode()));
         menuBar.add(DisplayModeMenu);
         
         setJMenuBar(menuBar);
@@ -132,9 +133,7 @@ public class MainWindow extends JFrame {
                         while ((str1 = bufferedReader.readLine())!= null) {
                             str2 = str2 + str1 + "\n";
                         }
-                        if(getCurrentTab() instanceof Tab tab){
-                            BetterAction.insertHtml(tab.getEditor(), tab.getEditor().getCaretPosition(), str2);
-                        }
+                        BetterAction.insertHtml(getCurrentTab().getEditor(), getCurrentTab().getEditor().getCaretPosition(), str2);
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -153,9 +152,7 @@ public class MainWindow extends JFrame {
                     try {
                         BufferedImage image = ImageIO.read((file)); //new BufferedImage(filepath);
                         ImageIO.write(image,"png", file);
-                        if(getCurrentTab() instanceof Tab tab){
-                            BetterAction.insertImage(tab.getEditor(), tab.getEditor().getCaretPosition(), image);
-                        }
+                            BetterAction.insertImage(getCurrentTab().getEditor(), getCurrentTab().getEditor().getCaretPosition(), image);
                     } catch (IOException ex) {
                         ex.printStackTrace(); //throw new RuntimeException(ex);
                     }
@@ -166,7 +163,12 @@ public class MainWindow extends JFrame {
         });
     }
 
-    public Component getCurrentTab(){
-        return tabs.getSelectedComponent();
+    public Tab getCurrentTab(){
+        return (Tab) tabs.getSelectedComponent();
+    }
+
+    public static MainWindow getInstance(){
+        if(mw == null) mw = new MainWindow();
+        return mw;
     }
 }

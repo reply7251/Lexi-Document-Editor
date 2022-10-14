@@ -8,11 +8,9 @@ import javax.swing.text.StyleConstants;
 
 
 public class FontMenuItem extends IMenuItem{
-    public FontMenuItem(MainWindow mw, String text, Font font) {
+    public FontMenuItem(String text, Font font) {
         super(text, (e)->{
-            if(mw.getCurrentTab() instanceof Tab tab){
-                font.perform(tab.getEditor());
-            }
+            font.perform(getTab().getEditor());
         });
     }
 }

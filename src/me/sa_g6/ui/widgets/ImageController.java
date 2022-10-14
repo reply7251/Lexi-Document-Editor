@@ -2,6 +2,7 @@ package me.sa_g6.ui.widgets;
 
 
 import me.sa_g6.utils.BetterAction;
+import me.sa_g6.utils.Size;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -174,7 +175,7 @@ public class ImageController extends MouseAdapter implements MouseMotionListener
                         }else {
                             width = resizer.getWidth();
                         }
-                        resizer.setBounds(x, y, width, height);
+                        resizer.setBounds(new Size<>(width, height));
                     }
                 }
                 case Cursor.E_RESIZE_CURSOR -> {
@@ -184,7 +185,7 @@ public class ImageController extends MouseAdapter implements MouseMotionListener
                         }else {
                             height = resizer.getHeight();
                         }
-                        resizer.setBounds(x, y, width, height);
+                        resizer.setBounds(new Size<>(width, height));
                     }
                 }
                 case Cursor.SE_RESIZE_CURSOR -> {
@@ -196,7 +197,7 @@ public class ImageController extends MouseAdapter implements MouseMotionListener
                                 width = (int) (height / 1.0 / startSize.height * startSize.width);
                             }
                         }
-                        resizer.setBounds(x, y, width, height);
+                        resizer.setBounds(new Size<>(width, height));
                     }
                 }
                 default -> {

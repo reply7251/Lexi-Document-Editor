@@ -1,9 +1,11 @@
 package me.sa_g6.ui.widgets;
 
+import me.sa_g6.iterator.ElementTreeIterator;
 import me.sa_g6.formatting.FullDisplayMode;
 import me.sa_g6.ui.MainWindow;
 import me.sa_g6.utils.BetterAction;
 import me.sa_g6.utils.ImageUtils;
+import me.sa_g6.utils.Size;
 import me.sa_g6.utils.StringUtils;
 
 import javax.swing.*;
@@ -11,6 +13,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
+import javax.swing.text.Element;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
@@ -22,6 +25,8 @@ import java.awt.image.BufferedImage;
 public class Tab extends JPanel {
     JTextPane editor = new JTextPane();
     JPopupMenu popup = new JPopupMenu();
+    public boolean puretext = false;
+    public final BetterAction.UndoManager undo;
 
     public Tab(){
         this(false);
@@ -36,8 +41,8 @@ public class Tab extends JPanel {
         editor.setDocument(new EnhancedHTMLDocument());
         editor.setEditorKit(new EnhancedHTMLDocument.EnhancedHTMLEditorKit());
         ImageUtils.setCache(editor.getDocument());
-        insertHtml(0,"<html><body><img src=\"F:\\PSO2\\raw\\2022-10-14_03-29-53-304_rikurzt_grass.png\" style=\"display:block\"></body></html>");
-        HTMLDocument doc = (HTMLDocument) editor.getDocument();
+        insertHtml(0,"<html><body></body></html>");
+        EnhancedHTMLDocument doc = (EnhancedHTMLDocument) editor.getDocument();
         doc.getStyleSheet().addRule("""
                 td {
                     border: 1px solid black;
@@ -127,7 +132,7 @@ public class Tab extends JPanel {
 
         KeyStroke ctrlZ = KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK);
         KeyStroke ctrlY = KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK);
-        BetterAction.UndoManager undo = new BetterAction.UndoManager();
+        undo = new BetterAction.UndoManager();
         doc.addUndoableEditListener(undo);
         editor.registerKeyboardAction(new BetterAction.UndoAction(undo),ctrlZ, JComponent.WHEN_FOCUSED);
         editor.registerKeyboardAction(new BetterAction.RedoAction(undo),ctrlY, JComponent.WHEN_FOCUSED);
