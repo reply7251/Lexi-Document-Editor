@@ -1,17 +1,11 @@
 package me.sa_g6.ui;
 
-import me.sa_g6.formatting.CenterAlignment;
+import me.sa_g6.formatting.*;
 import me.sa_g6.formatting.Font.Bold;
 import me.sa_g6.formatting.Font.Italic;
 import me.sa_g6.formatting.Font.Underline;
-import me.sa_g6.formatting.LeftAlignment;
-import me.sa_g6.formatting.RightAlignment;
-import me.sa_g6.ui.widgets.AlignmentMenuItem;
-import me.sa_g6.ui.widgets.BackgroundColorMenuItem;
-import me.sa_g6.ui.widgets.FontColorMenuItem;
+import me.sa_g6.ui.widgets.*;
 //import me.sa_g6.ui.widgets.EditMenuItem;
-import me.sa_g6.ui.widgets.FontMenuItem;
-import me.sa_g6.ui.widgets.Tab;
 import me.sa_g6.utils.BetterAction;
 import me.sa_g6.utils.Prov;
 
@@ -19,6 +13,8 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.*;
 import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.event.ActionEvent;
@@ -101,10 +97,17 @@ public class MainWindow extends JFrame {
         BackgroundColorMenu.add(new BackgroundColorMenuItem(this,"Yellow",Color.yellow));
         BackgroundColorMenu.add(new BackgroundColorMenuItem(this,"Orange",Color.orange));
         menuBar.add(BackgroundColorMenu);
+
+        JMenu DisplayModeMenu = new JMenu("DisplayMode");
+        DisplayModeMenu.add(new DisplayModeMenuItem(this,"FULL",new FullDisplayMode()));
+        DisplayModeMenu.add(new DisplayModeMenuItem(this,"TextOnly",new TextOnlyDisplayMode()));
+        menuBar.add(DisplayModeMenu);
         
         setJMenuBar(menuBar);
 
         tab1.insertTable(tab1.getEditor().getCaretPosition(),2,3);
+
+
     }
 
     public Component getCurrentTab(){

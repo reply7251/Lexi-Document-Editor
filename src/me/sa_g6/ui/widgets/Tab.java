@@ -1,5 +1,6 @@
 package me.sa_g6.ui.widgets;
 
+import me.sa_g6.formatting.FullDisplayMode;
 import me.sa_g6.ui.MainWindow;
 import me.sa_g6.utils.BetterAction;
 import me.sa_g6.utils.ImageUtils;
@@ -35,7 +36,7 @@ public class Tab extends JPanel {
         editor.setDocument(new EnhancedHTMLDocument());
         editor.setEditorKit(new EnhancedHTMLDocument.EnhancedHTMLEditorKit());
         ImageUtils.setCache(editor.getDocument());
-        insertHtml(0,"<html><body></body></html>");
+        insertHtml(0,"<html><body><img src=\"F:\\PSO2\\raw\\2022-10-14_03-29-53-304_rikurzt_grass.png\" style=\"display:block\"></body></html>");
         HTMLDocument doc = (HTMLDocument) editor.getDocument();
         doc.getStyleSheet().addRule("""
                 td {
@@ -130,6 +131,12 @@ public class Tab extends JPanel {
         doc.addUndoableEditListener(undo);
         editor.registerKeyboardAction(new BetterAction.UndoAction(undo),ctrlZ, JComponent.WHEN_FOCUSED);
         editor.registerKeyboardAction(new BetterAction.RedoAction(undo),ctrlY, JComponent.WHEN_FOCUSED);
+
+
+        SimpleAttributeSet attr = new SimpleAttributeSet();
+        StyleConstants.setSpaceAbove(attr,8);
+        StyleConstants.setSpaceBelow(attr,8);
+        editor.getStyledDocument().setParagraphAttributes(0,Integer.MAX_VALUE,attr,false);
     }
 
     public JTextPane getEditor() {

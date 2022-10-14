@@ -43,7 +43,7 @@ public class BetterAction {
         URL url = ImageUtils.putImage(image);
         EnhancedHTMLDocument doc = (EnhancedHTMLDocument) editor.getDocument();
         doc.startEdit();
-        insertHtml(editor,offset, "<img src=\"%s\" width=\"%d\" height=\"%d\">".formatted(url, image.getWidth(), image.getHeight())
+        insertHtml(editor,offset, "<img src=\"%s\" width=\"%d\" height=\"%d\" style=\"display:block\">>".formatted(url, image.getWidth(), image.getHeight())
             ,mayHasNewLine(editor, offset) ? null : HTML.Tag.IMG);
         doc.finishEdit();
     }
@@ -87,6 +87,7 @@ public class BetterAction {
                 try {
                     if(trans.isDataFlavorSupported(DataFlavor.stringFlavor)){
                         String data = (String) trans.getTransferData(DataFlavor.stringFlavor);
+                        System.out.println(data);
                         int pos = editor.getCaretPosition();
                         doc.compoundEdit = new CompoundEdit();
                         insertHtml(editor, pos,data.replaceAll("\n","</br>"));
