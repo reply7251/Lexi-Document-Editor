@@ -43,7 +43,7 @@ public class BetterAction {
         URL url = ImageUtils.putImage(image);
         EnhancedHTMLDocument doc = (EnhancedHTMLDocument) editor.getDocument();
         doc.startEdit();
-        insertHtml(editor,offset, "<img src=\"%s\" width=\"%d\" height=\"%d\" style=\"display:block\">>".formatted(url, image.getWidth(), image.getHeight())
+        insertHtml(editor,offset, "<img src=\"%s\" width=\"%d\" height=\"%d\" style=\"display:block\">".formatted(url, image.getWidth(), image.getHeight())
             ,mayHasNewLine(editor, offset) ? null : HTML.Tag.IMG);
         doc.finishEdit();
     }
