@@ -4,5 +4,4 @@ import javax.swing.*;
 
 public interface DisplayMode {
     public void perform(JTextPane editor);
-    public void perform();
 }

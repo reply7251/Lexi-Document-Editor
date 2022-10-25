@@ -23,6 +23,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 
 public class Tab extends JPanel {
+
     JTextPane editor = new JTextPane();
     JPopupMenu popup = new JPopupMenu();
     public boolean puretext = false;
@@ -36,10 +37,20 @@ public class Tab extends JPanel {
         super();
         GroupLayout layout = new GroupLayout(this);
         setLayout(layout);
+        MouseEventBus eventBus = new MouseEventBus();
+/*
+        MouseObererverable oberserver = new MouseObererverable();
 
+
+        addMouseListener(eventBus);
+        addMouseMotionListener(eventBus);
+*/
         //editor.setContentType("text/html");
-        editor.setDocument(new EnhancedHTMLDocument());
-        editor.setEditorKit(new EnhancedHTMLDocument.EnhancedHTMLEditorKit());
+        EnhancedHTMLDocument enhancedHTMLDocument = new EnhancedHTMLDocument();
+        EnhancedHTMLDocument.EnhancedHTMLEditorKit enhancedHTMLEditorKit = new EnhancedHTMLDocument.EnhancedHTMLEditorKit();
+        enhancedHTMLEditorKit.setEventBus(eventBus);
+        editor.setDocument(enhancedHTMLDocument);
+        editor.setEditorKit(enhancedHTMLEditorKit);
         ImageUtils.setCache(editor.getDocument());
         insertHtml(0,"<html><body></body></html>");
         EnhancedHTMLDocument doc = (EnhancedHTMLDocument) editor.getDocument();

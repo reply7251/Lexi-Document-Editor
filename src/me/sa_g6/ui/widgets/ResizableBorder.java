@@ -77,10 +77,12 @@ public class ResizableBorder implements Border {
         int w = c.getWidth();
         int h = c.getHeight();
 
+        System.out.println("Me"+me.getPoint());
         for (int i = 0; i < locations.length; i++) {
 
             var rect = getRectangle(0, 0, w, h, locations[i]);
 
+            System.out.println(rect.getLocation());
             if (rect != null && rect.contains(me.getPoint())) {
                 return cursors[i];
             }

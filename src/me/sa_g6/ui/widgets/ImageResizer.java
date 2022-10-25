@@ -7,7 +7,6 @@ import javax.swing.*;
 import javax.swing.text.*;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
-import javax.swing.undo.CompoundEdit;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
@@ -15,13 +14,14 @@ import java.io.StringWriter;
 
 public class ImageResizer extends JComponent {
     Element elem;
-    ImageController controller;
     public ImageResizer(ImageController controller,Element element){
-        this.controller = controller;
+
         elem = element;
         setLayout(new BorderLayout());
-        addMouseListener(controller);
-        addMouseMotionListener(controller);
+        MouseEventBus mouseEventBus = new MouseEventBus();
+        mouseEventBus.subscribe(controller);
+        addMouseListener(mouseEventBus);
+        addMouseMotionListener(mouseEventBus);
         setBorder(new ResizableBorder(8));
         registerKeyboardAction(e->{
             StringWriter writer = new StringWriter();

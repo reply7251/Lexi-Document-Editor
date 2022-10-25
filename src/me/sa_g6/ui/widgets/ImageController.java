@@ -13,15 +13,14 @@ import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
 import java.awt.event.InputEvent;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 import java.awt.geom.Rectangle2D;
-import java.io.IOException;
 import java.io.Serializable;
-import java.io.StringWriter;
 
-public class ImageController extends MouseAdapter implements MouseMotionListener, Serializable {
+public class ImageController implements Serializable, MouseOberserver {
+
+
+    private IMouseEventSubject action;
     Element curElem = null;
     boolean curElemImage = false;
 
@@ -37,18 +36,45 @@ public class ImageController extends MouseAdapter implements MouseMotionListener
     ImageResizer resizer;
     JTextPane editor;
 
+    @Override
+    public void update(MouseEvent e) {
+        switch (e.getID()) {
+            case MouseEvent.MOUSE_CLICKED:
+                mouseClicked(e);
+                break;
+            case MouseEvent.MOUSE_PRESSED:
+                mousePressed(e);
+                break;
+            case MouseEvent.MOUSE_RELEASED:
+                mouseReleased();
+                break;
+            case MouseEvent.MOUSE_MOVED:
+                mouseMoved(e);
+                break;
+            case MouseEvent.MOUSE_EXITED:
+                mouseExited(e);
+                break;
+            case MouseEvent.MOUSE_DRAGGED:
+                mouseDragged(e);
+                break;
+
+        }
+
+
+    }
+
     public void setEditor(JTextPane editor) {
         this.editor = editor;
     }
 
-    public void updateResizer(){
+    public void updateResizer() {
         EnhancedHTMLDocument doc = (EnhancedHTMLDocument) editor.getDocument();
         Element elem = resizer.elem;
         int start = elem.getStartOffset(), len = elem.getEndOffset() - start;
         doc.hackFireChangedUpdate(doc.new DefaultDocumentEvent(start, len, DocumentEvent.EventType.CHANGE));
     }
 
-    @Override
+
     public void mouseClicked(MouseEvent e) {
         if (e.getSource() instanceof JEditorPane editor && editor.isEnabled()) {
             if (curElemImage) {
@@ -69,7 +95,7 @@ public class ImageController extends MouseAdapter implements MouseMotionListener
                 }
             }
         }
-        if(resizer != null){
+        if (resizer != null) {
             editor.remove(resizer);
             resizer.invalidate();
             editor.repaint();
@@ -77,9 +103,9 @@ public class ImageController extends MouseAdapter implements MouseMotionListener
         }
     }
 
-    @Override
+
     public void mouseMoved(MouseEvent e) {
-        if(e.getSource() instanceof JEditorPane editor){
+        if (e.getSource() instanceof JEditorPane editor) {
             if (!editor.isEnabled()) {
                 return;
             }
@@ -107,22 +133,22 @@ public class ImageController extends MouseAdapter implements MouseMotionListener
                 }
             }
         }
-        if(resizer != null && resizer.hasFocus()){
-            resizer.setCursor(Cursor.getPredefinedCursor(((ResizableBorder)resizer.getBorder()).getCursor(e)));
+        if (resizer != null && resizer.hasFocus()) {
+            resizer.setCursor(Cursor.getPredefinedCursor(((ResizableBorder) resizer.getBorder()).getCursor(e)));
         }
     }
 
-    @Override
+
     public void mouseExited(MouseEvent e) {
-        if(e.getSource() instanceof JComponent c){
+        if (e.getSource() instanceof JComponent c) {
             c.setCursor(Cursor.getDefaultCursor());
         }
     }
 
-    @Override
+
     public void mousePressed(MouseEvent e) {
-        if(resizer != null && resizer.hasFocus()){
-            ResizableBorder border = (ResizableBorder)resizer.getBorder();
+        if (resizer != null && resizer.hasFocus()) {
+            ResizableBorder border = (ResizableBorder) resizer.getBorder();
             cursor = border.getCursor(e);
             startSize = resizer.getSize();
             startPos = e.getPoint();
@@ -132,9 +158,9 @@ public class ImageController extends MouseAdapter implements MouseMotionListener
         }
     }
 
-    @Override
-    public void mouseReleased(MouseEvent e) {
-        if(resizer != null){
+
+    public void mouseReleased() {
+        if (resizer != null) {
             HTMLDocument.RunElement attributes = (HTMLDocument.RunElement) resizer.elem.getAttributes();
             EnhancedHTMLDocument doc = (EnhancedHTMLDocument) editor.getDocument();
             doc.hackWriteLock();
@@ -154,7 +180,7 @@ public class ImageController extends MouseAdapter implements MouseMotionListener
         startPos = null;
     }
 
-    @Override
+
     public void mouseDragged(MouseEvent e) {
         if (resizer != null && startSize != null) {
             int x = resizer.getX();
@@ -170,9 +196,9 @@ public class ImageController extends MouseAdapter implements MouseMotionListener
             switch (cursor) {
                 case Cursor.S_RESIZE_CURSOR -> {
                     if ((height > 20)) {
-                        if (shift){
+                        if (shift) {
                             width = (int) (height / 1.0 / startSize.height * startSize.width);
-                        }else {
+                        } else {
                             width = resizer.getWidth();
                         }
                         resizer.setBounds(new Size<>(width, height));
@@ -180,9 +206,9 @@ public class ImageController extends MouseAdapter implements MouseMotionListener
                 }
                 case Cursor.E_RESIZE_CURSOR -> {
                     if ((width > 20)) {
-                        if (shift){
+                        if (shift) {
                             height = (int) (width / 1.0 / startSize.width * startSize.height);
-                        }else {
+                        } else {
                             height = resizer.getHeight();
                         }
                         resizer.setBounds(new Size<>(width, height));
@@ -190,10 +216,10 @@ public class ImageController extends MouseAdapter implements MouseMotionListener
                 }
                 case Cursor.SE_RESIZE_CURSOR -> {
                     if ((width > 20) && (height > 20)) {
-                        if(shift){
-                            if(width / 1.0 /startSize.width > height / 1.0 / startSize.height){
+                        if (shift) {
+                            if (width / 1.0 / startSize.width > height / 1.0 / startSize.height) {
                                 height = (int) (width / 1.0 / startSize.width * startSize.height);
-                            }else {
+                            } else {
                                 width = (int) (height / 1.0 / startSize.height * startSize.width);
                             }
                         }

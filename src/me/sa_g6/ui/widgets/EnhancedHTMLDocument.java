@@ -79,26 +79,35 @@ public class EnhancedHTMLDocument extends HTMLDocument {
 
     static class EnhancedHTMLEditorKit extends HTMLEditorKit {
         ImageController imageController = new ImageController();
+        //MouseObererverable mouseEvent = new MouseObererverable();
+        MouseEventBus eventBus;
 
         private final HTMLEditorKit.HTMLFactory factory = new HTMLBetterFactory();
+
+        public void setEventBus(MouseEventBus eventBus){
+            this.eventBus=eventBus;
+        }
         @Override
         public ViewFactory getViewFactory() {
             return factory;
         }
 
+
         @Override
         public void install(JEditorPane c) {
-            c.addMouseListener(imageController);
-            c.addMouseMotionListener(imageController);
+            c.addMouseListener(eventBus);
+            c.addMouseMotionListener(eventBus);
             imageController.setEditor((JTextPane)c);
+            eventBus.subscribe(imageController);
             super.install(c);
         }
 
         @Override
         public void deinstall(JEditorPane c) {
-            c.removeMouseListener(imageController);
-            c.removeMouseMotionListener(imageController);
+            c.removeMouseListener(eventBus);
+            c.removeMouseMotionListener(eventBus);
             imageController.setEditor(null);
+            eventBus.unsubscribe(imageController);
             super.deinstall(c);
         }
 
