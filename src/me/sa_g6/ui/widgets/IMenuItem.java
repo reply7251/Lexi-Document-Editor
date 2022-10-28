@@ -5,7 +5,7 @@ import me.sa_g6.ui.MainWindow;
 import javax.swing.*;
 import java.awt.event.ActionListener;
 
-public abstract class IMenuItem extends JMenuItem {
+public class IMenuItem extends JMenuItem {
     public IMenuItem(String text, ActionListener listener){
         super(text);
 

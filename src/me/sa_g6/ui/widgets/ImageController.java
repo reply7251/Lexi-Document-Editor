@@ -17,7 +17,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 
-public class ImageController implements Serializable, MouseOberserver {
+public class ImageController implements Serializable, MouseObserver {
 
 
     private IMouseEventSubject action;

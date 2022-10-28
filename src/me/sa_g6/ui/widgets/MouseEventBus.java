@@ -7,56 +7,48 @@ import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 
 public class MouseEventBus extends MouseAdapter implements MouseMotionListener, MouseListener,IMouseEventSubject {
-    private ArrayList<MouseOberserver> oberserverList = new ArrayList<MouseOberserver>();
+    private ArrayList<MouseObserver> observers = new ArrayList<>();
 
-    public void subscribe(MouseOberserver mouseOberserver){
-        oberserverList.add(mouseOberserver);
+    public void subscribe(MouseObserver mouseObserver){
+        observers.add(mouseObserver);
     }
-    public void unsubscribe(MouseOberserver mouseOberserver){
-        oberserverList.remove(mouseOberserver);
+    public void unsubscribe(MouseObserver mouseObserver){
+        observers.remove(mouseObserver);
     }
-    public void notifiAll(MouseEvent e){
-        for (MouseOberserver oberserver: oberserverList ) {
-            oberserver.update(e);
+    public void notifyAll(MouseEvent e){
+        for (MouseObserver observer: observers) {
+            observer.update(e);
         }
     }
 
 
     @Override
     public void mouseClicked(MouseEvent e) {
-
-        notifiAll(e);
-        //System.out.println(e);
+        notifyAll(e);
     }
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        notifiAll(e);
-        //System.out.println(e);
+        notifyAll(e);
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        notifiAll(e);
-        //System.out.println(e);
+        notifyAll(e);
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        notifiAll(e);
-        System.out.println(e);
+        notifyAll(e);
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        notifiAll(e);
-        //System.out.println(e);
+        notifyAll(e);
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-        notifiAll(e);
-        //System.out.println(e);
+        notifyAll(e);
     }
-
 }

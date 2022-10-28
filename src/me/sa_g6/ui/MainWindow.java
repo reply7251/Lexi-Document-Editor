@@ -14,20 +14,14 @@ import java.awt.event.KeyEvent;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.text.DefaultEditorKit;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
 import java.awt.*;
-import java.awt.datatransfer.Clipboard;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.ServiceLoader;
 
 import static javax.swing.JOptionPane.showMessageDialog;
 
@@ -35,6 +29,7 @@ public class MainWindow extends JFrame {
     private static MainWindow mw = null;
     JTabbedPane tabs = new JTabbedPane();
     JMenuBar menuBar = new JMenuBar();
+    public final FileChooser fileChooser;
 
     private MainWindow(){
         super("Lexi Document Editor");
@@ -44,18 +39,45 @@ public class MainWindow extends JFrame {
         init();
         setSize(800,600);
         setLocationRelativeTo(null);
+        fileChooser = new FileChooser(this);
     }
 
     void init(){
-        Tab tab1 = new Tab(true);
-        tabs.add("new 1", tab1);
-        tabs.add("new 2", new Tab());
+        //Tab tab1 = new Tab(true);
+        addTab("debug", true);
 
         JMenu fileMenu = new JMenu("File");
         JMenuItem item = new JMenuItem("Open");
         JMenuItem item2 = new JMenuItem("Insert Picture");
         fileMenu.add(item);
         fileMenu.add(item2);
+
+        IMenuItem save = new IMenuItem("Save", (e) -> {
+            fileChooser.setLoadMode(false);
+            showWindow(fileChooser);
+            //BetterAction.saveDocument(getCurrentTab());
+        });
+        fileMenu.add(save);
+        IMenuItem load = new IMenuItem("Load", (e) -> {
+            fileChooser.setLoadMode(true);
+            showWindow(fileChooser);
+            //BetterAction.loadDocument(getCurrentTab(), 774); //327 382 412 434 456 478 500 530 552 580 610
+        });
+        fileMenu.add(load);
+        IMenuItem newTab = new IMenuItem("New", (e) ->{
+            int max = 0;
+            for(int i = 0; i < tabs.getTabCount(); i++){
+                String title = tabs.getTitleAt(i);
+                if(title.startsWith("new ")){
+                    try{
+                        max = Math.max(max, Integer.parseInt(title.substring(4)));
+                    }catch (NumberFormatException ignored){ }
+                }
+            }
+            addTab("new " + (max+1));
+        });
+        fileMenu.add(newTab);
+
         menuBar.add(fileMenu);
 
         JMenu formatMenu = new JMenu("Format");
@@ -116,8 +138,6 @@ public class MainWindow extends JFrame {
         
         setJMenuBar(menuBar);
 
-        tab1.insertTable(tab1.getEditor().getCaretPosition(),2,3);
-
         item.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -170,5 +190,25 @@ public class MainWindow extends JFrame {
     public static MainWindow getInstance(){
         if(mw == null) mw = new MainWindow();
         return mw;
+    }
+
+    public void addTab(String name){
+        addTab(name, false);
+    }
+
+    public void addTab(String name, boolean debug){
+        tabs.addTab(name, new Tab(debug));
+        tabs.setTabComponentAt(tabs.getTabCount()-1, new ButtonTabComponent(tabs));
+        tabs.setSelectedIndex(tabs.getTabCount()-1);
+    }
+
+    public JTabbedPane getTabs(){
+        return tabs;
+    }
+
+    public void showWindow(Window window){
+        SwingUtilities.invokeLater(()->{
+            window.setVisible(true);
+        });
     }
 }
