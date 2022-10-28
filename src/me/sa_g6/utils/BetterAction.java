@@ -1,8 +1,14 @@
 package me.sa_g6.utils;
 
-import me.sa_g6.iterator.ElementIterator;
+import me.sa_g6.adapter.DocumentAdapter;
+import me.sa_g6.database.ElementManager;
+import me.sa_g6.database.IDBManager;
+import me.sa_g6.database.ODBManager;
+import me.sa_g6.ui.MainWindow;
 import me.sa_g6.ui.widgets.EnhancedHTMLDocument;
+import me.sa_g6.ui.widgets.Tab;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.UndoableEditEvent;
@@ -18,12 +24,22 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
 
+import static javax.swing.text.DefaultStyledDocument.BUFFER_SIZE_DEFAULT;
+
 public class BetterAction {
+    public static final IDBManager dbManager;
+    static {
+        dbManager = new ODBManager("$objectdb/db/tab1.odb");
+        ElementManager.INSTANCE = new ElementManager(dbManager);
+    }
+    static long lastSaveID;
+
     public static void insertHtml(JTextPane editor, int offset, String html){
         insertHtml(editor,offset,html,null);
     }
@@ -46,6 +62,35 @@ public class BetterAction {
         insertHtml(editor,offset, "<img src=\"%s\" width=\"%d\" height=\"%d\" style=\"display:block\">".formatted(url, image.getWidth(), image.getHeight())
             ,mayHasNewLine(editor, offset) ? null : HTML.Tag.IMG);
         doc.finishEdit();
+    }
+
+    public static void loadDocument(Tab tab, long id){
+        EnhancedHTMLDocument document = new EnhancedHTMLDocument();//tab.getDocument();
+        DocumentAdapter da = dbManager.getHtml(id);
+
+        tab.getEditor().setDocument(document);
+        tab.registerDocumentListener();
+        tab.getEditor().setText(da.getHTML());
+        document.hackWriteLock();
+        Element element = ElementManager.INSTANCE.getElement(document, id);
+        AbstractDocument.BranchElement root = (AbstractDocument.BranchElement) document.getDefaultRootElement();
+        root.replace(1, root.getChildCount()-1 , new Element[]{element});
+        document.hackWriteUnlock();
+        tab.getEditor().editElement();
+    }
+
+    public static void saveDocument(Tab tab, String name){
+        EnhancedHTMLDocument document = tab.getDocument();
+        dbManager.begin();
+        lastSaveID = ElementManager.INSTANCE.saveElement(document.getDefaultRootElement().getElement(1));
+        try {
+            dbManager.saveHtml(new DocumentAdapter(lastSaveID, tab.getEditor().getText(), document.getText(0, document.getLength()), name));
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+        }
+        System.out.println("save to ID: " + lastSaveID+ ", name: " + name);
+
+        dbManager.commit();
     }
 
     //<div display: "inline-block">
@@ -104,6 +149,11 @@ public class BetterAction {
                             doc.compoundEdit = new CompoundEdit();
 
                             insertImage(editor, editor.getCaretPosition(), bi);
+
+                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                            ImageIO.write(bi, "png", baos);
+
+                            System.out.println(baos.size());
                         }
                     }
                 } catch (IOException | UnsupportedFlavorException | BadLocationException ignore) {

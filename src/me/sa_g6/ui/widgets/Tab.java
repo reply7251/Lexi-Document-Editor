@@ -24,10 +24,13 @@ import java.awt.image.BufferedImage;
 
 public class Tab extends JPanel {
 
-    JTextPane editor = new JTextPane();
+    EnhancedTextPane editor = new EnhancedTextPane();
     JPopupMenu popup = new JPopupMenu();
     public boolean puretext = false;
     public final BetterAction.UndoManager undo;
+
+    JTextArea debug1;
+    JTextPane debug2;
 
     public Tab(){
         this(false);
@@ -35,6 +38,7 @@ public class Tab extends JPanel {
 
     public Tab(boolean debug){
         super();
+
         GroupLayout layout = new GroupLayout(this);
         setLayout(layout);
         MouseEventBus eventBus = new MouseEventBus();
@@ -54,22 +58,16 @@ public class Tab extends JPanel {
         ImageUtils.setCache(editor.getDocument());
         insertHtml(0,"<html><body></body></html>");
         EnhancedHTMLDocument doc = (EnhancedHTMLDocument) editor.getDocument();
-        doc.getStyleSheet().addRule("""
-                td {
-                    border: 1px solid black;
-                    width:100px
-                }
-                """);
         JScrollPane pane = new JScrollPane(editor);
 
         if(debug){
 
-            JTextArea debug1 = new JTextArea();
+            debug1 = new JTextArea();
             debug1.setEditable(false);
             JScrollPane debugPane1 = new JScrollPane(debug1);
             debugPane1.getVerticalScrollBar().setUnitIncrement(16);
 
-            JTextPane debug2 = new JTextPane();
+            debug2 = new JTextPane();
             debug2.setEditable(false);
             JPanel noWrapPanel = new JPanel(new BorderLayout());
             noWrapPanel.add(debug2);
@@ -80,45 +78,24 @@ public class Tab extends JPanel {
             StyleConstants.setLineSpacing(lineSpacing, (float) -0.3);
             debug2.setParagraphAttributes(lineSpacing, false);
 
-            editor.getDocument().addDocumentListener(new DocumentListener() {
-                @Override
-                public void insertUpdate(DocumentEvent e) {
-                    update();
-                }
+            registerDocumentListener();
 
-                @Override
-                public void removeUpdate(DocumentEvent e) {
-                    update();
-                }
-
-                @Override
-                public void changedUpdate(DocumentEvent e) {
-                    update();
-                }
-
-                void update(){
-                    debug1.setText(editor.getText());
-                    StringBuilder builder = new StringBuilder();
-                    StringUtils.elementToString(builder, editor.getDocument().getDefaultRootElement());
-                    debug2.setText(builder.toString());
-                }
-            });
             layout.setHorizontalGroup(
                     layout.createSequentialGroup()
                             .addComponent(pane).addGap(5)
                             .addGroup(
                                     layout.createParallelGroup()
-                                            .addComponent(debugPane1,100,200,300)
-                                            .addComponent(debugPane2,100,200,300)
+                                            .addComponent(debugPane1,200,200,300)
+                                            .addComponent(debugPane2,200,200,300)
                             )
             );
             layout.setVerticalGroup(
                     layout.createParallelGroup().addComponent(pane)
                             .addGroup(
                                     layout.createSequentialGroup()
-                                            .addComponent(debugPane1,100,200,1000)
+                                            .addComponent(debugPane1,200,200,1000)
                                             .addGap(5)
-                                            .addComponent(debugPane2,100,200,1000)
+                                            .addComponent(debugPane2,200,200,1000)
                             )
             );
 
@@ -153,9 +130,45 @@ public class Tab extends JPanel {
         StyleConstants.setSpaceAbove(attr,8);
         StyleConstants.setSpaceBelow(attr,8);
         editor.getStyledDocument().setParagraphAttributes(0,Integer.MAX_VALUE,attr,false);
+
+
+        editor.registerKeyboardAction(e -> {
+            puretext = !puretext;
+            System.out.println(puretext);
+
+            doc.hackFireChangedUpdate(doc.new DefaultDocumentEvent(0, doc.getLength(), DocumentEvent.EventType.CHANGE));
+        },KeyStroke.getKeyStroke(KeyEvent.VK_G, KeyEvent.CTRL_DOWN_MASK), JComponent.WHEN_FOCUSED);
     }
 
-    public JTextPane getEditor() {
+    public void registerDocumentListener(){
+        if(debug1 != null){
+            editor.getDocument().addDocumentListener(new DocumentListener() {
+                @Override
+                public void insertUpdate(DocumentEvent e) {
+                    update();
+                }
+
+                @Override
+                public void removeUpdate(DocumentEvent e) {
+                    update();
+                }
+
+                @Override
+                public void changedUpdate(DocumentEvent e) {
+                    update();
+                }
+
+                void update(){
+                    debug1.setText(editor.getText());
+                    StringBuilder builder = new StringBuilder();
+                    StringUtils.elementToString(builder, editor.getDocument().getDefaultRootElement());
+                    debug2.setText(builder.toString());
+                }
+            });
+        }
+    }
+
+    public EnhancedTextPane getEditor() {
         return editor;
     }
 

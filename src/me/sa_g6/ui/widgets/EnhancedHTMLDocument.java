@@ -20,9 +20,40 @@ public class EnhancedHTMLDocument extends HTMLDocument {
     }
 
     public EnhancedHTMLDocument(StyleSheet ss) {
-        super(ss);
+        this(new GapContent(BUFFER_SIZE_DEFAULT), ss);
+    }
+
+    public EnhancedHTMLDocument(Content content){
+        this(content, new StyleSheet());
+    }
+
+    public EnhancedHTMLDocument(Content content, StyleSheet ss){
+        super(content, ss);
+        getStyleSheet().addRule("""
+                td {
+                    border: 1px solid black;
+                    width:100px
+                }
+                """);
         setParser(new EnhancedHTMLEditorKit().hackGetParser());
     }
+
+    public void setBuffer(ElementBuffer buffer){
+        this.buffer = buffer;
+    }
+
+    public ElementBuffer getBuffer(){
+        return buffer;
+    }
+
+    public Content hackGetContent(){
+        return getContent();
+    }
+
+    public void hackInsert(int offset, ElementSpec[] data) throws BadLocationException {
+        insert(offset, data);
+    }
+
 
     public void hackWriteLock() {
         writeLock();
@@ -67,6 +98,16 @@ public class EnhancedHTMLDocument extends HTMLDocument {
         }
     }
 
+    public BranchElement hackCreateBranchElement(Element parent){
+        return (BranchElement) createBranchElement(parent, null);
+    }
+
+    public LeafElement hackCreateLeafElement(Element parent, int p0, int p1){
+        return (LeafElement) createLeafElement(parent, null, p0, p1);
+    }
+
+
+
     static class HTMLBetterFactory extends HTMLEditorKit.HTMLFactory{
         public View create(Element elem) {
             AttributeSet attrs = elem.getAttributes();
@@ -77,7 +118,7 @@ public class EnhancedHTMLDocument extends HTMLDocument {
         }
     }
 
-    static class EnhancedHTMLEditorKit extends HTMLEditorKit {
+    public static class EnhancedHTMLEditorKit extends HTMLEditorKit {
         ImageController imageController = new ImageController();
         //MouseObererverable mouseEvent = new MouseObererverable();
         MouseEventBus eventBus;
