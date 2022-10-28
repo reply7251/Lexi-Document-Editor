@@ -11,3 +11,4 @@ public class Bold implements Font{
         editor.setCharacterAttributes(attr, false);
     }
 }
+

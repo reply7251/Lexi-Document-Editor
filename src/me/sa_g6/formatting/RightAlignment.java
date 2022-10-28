@@ -13,6 +13,5 @@ public class RightAlignment implements Alignment {
         int start = editor.getSelectionStart();
         int end = editor.getSelectionEnd();
         editor.getStyledDocument().setParagraphAttributes(start,end-start,attr,false);
-        //editor.getStyledDocument().setParagraphAttributes(0, editor.getStyledDocument().getLength(), attr, false);
     }
 }

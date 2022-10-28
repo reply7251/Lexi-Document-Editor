@@ -14,3 +14,4 @@ public class FontMenuItem extends IMenuItem{
         });
     }
 }
+

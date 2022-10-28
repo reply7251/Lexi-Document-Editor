@@ -11,3 +11,4 @@ public class Italic implements Font{
         editor.setCharacterAttributes(attr, false);
     }
 }
+

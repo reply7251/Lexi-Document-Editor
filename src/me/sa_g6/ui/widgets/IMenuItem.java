@@ -16,3 +16,4 @@ public abstract class IMenuItem extends JMenuItem {
         return (Tab) MainWindow.getInstance().getCurrentTab();
     }
 }
+

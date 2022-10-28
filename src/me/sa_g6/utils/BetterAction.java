@@ -150,7 +150,7 @@ public class BetterAction {
         public void actionPerformed(ActionEvent e) {
             try {
                 manager.undo();
-            }catch (CannotUndoException ex){
+            } catch (CannotUndoException ex){
             }
         }
     }

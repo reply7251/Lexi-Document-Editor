@@ -53,23 +53,25 @@ public class MainWindow extends JFrame {
 
         JMenu fileMenu = new JMenu("File");
         JMenuItem item = new JMenuItem("Open");
-        JMenuItem item2 = new JMenuItem("Insert Picture");
         fileMenu.add(item);
-        fileMenu.add(item2);
         menuBar.add(fileMenu);
 
+        JMenu insert = new JMenu("Insert");
+        JMenuItem insertPicture = new JMenuItem("Insert Picture");
+        insert.add(insertPicture);
+        menuBar.add(insert);
+
         JMenu formatMenu = new JMenu("Format");
-        formatMenu.add(new AlignmentMenuItem("Align left", new LeftAlignment()));
+        formatMenu.add(new AlignmentMenuItem("Align Left", new LeftAlignment()));
         formatMenu.add(new AlignmentMenuItem("Align Right", new RightAlignment()));
         formatMenu.add(new AlignmentMenuItem("Align Center", new CenterAlignment()));
         menuBar.add(formatMenu);
 
         JMenu fontMenu = new JMenu("Font");
         fontMenu.add(new FontMenuItem("Bold", new Bold()));
-        fontMenu.add(new FontMenuItem("italic", new Italic()));
-        fontMenu.add(new FontMenuItem("underline", new Underline()));
+        fontMenu.add(new FontMenuItem("Italic", new Italic()));
+        fontMenu.add(new FontMenuItem("Underline", new Underline()));
         menuBar.add(fontMenu);
-
 
         Prov<JTextPane> prov = ()-> ((Tab)tabs.getSelectedComponent()).getEditor();
 
@@ -135,14 +137,14 @@ public class MainWindow extends JFrame {
                         }
                         BetterAction.insertHtml(getCurrentTab().getEditor(), getCurrentTab().getEditor().getCaretPosition(), str2);
                     } catch (Exception ex) {
+                        showMessageDialog(null, "Unable to insert file");
                         ex.printStackTrace();
                     }
                 } else {
-                    showMessageDialog(null, "Unable to insert file");
                 }
             }
         });
-        item2.addActionListener(new ActionListener() {
+        insertPicture.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 JFileChooser fileChooser2 = new JFileChooser();
                 fileChooser2.setCurrentDirectory(new File(System.getProperty("user.home")));
@@ -154,10 +156,10 @@ public class MainWindow extends JFrame {
                         ImageIO.write(image,"png", file);
                             BetterAction.insertImage(getCurrentTab().getEditor(), getCurrentTab().getEditor().getCaretPosition(), image);
                     } catch (IOException ex) {
+                        showMessageDialog(null, "Unable to insert picture");
                         ex.printStackTrace(); //throw new RuntimeException(ex);
                     }
                 } else {
-                    showMessageDialog(null, "Unable to insert picture");
                 }
             }
         });
