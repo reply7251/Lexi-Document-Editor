@@ -4,7 +4,7 @@ import me.sa_g6.iterator.ElementTreeIterator;
 import me.sa_g6.formatting.FullDisplayMode;
 import me.sa_g6.ui.MainWindow;
 import me.sa_g6.utils.BetterAction;
-import me.sa_g6.utils.ImageUtils;
+import me.sa_g6.utils.ImageCache;
 import me.sa_g6.utils.Size;
 import me.sa_g6.utils.StringUtils;
 
@@ -55,7 +55,7 @@ public class Tab extends JPanel {
         enhancedHTMLEditorKit.setEventBus(eventBus);
         editor.setDocument(enhancedHTMLDocument);
         editor.setEditorKit(enhancedHTMLEditorKit);
-        ImageUtils.setCache(editor.getDocument());
+        ImageCache.getImageCache(editor.getDocument());
         insertHtml(0,"<html><body></body></html>");
         EnhancedHTMLDocument doc = (EnhancedHTMLDocument) editor.getDocument();
         JScrollPane pane = new JScrollPane(editor);
