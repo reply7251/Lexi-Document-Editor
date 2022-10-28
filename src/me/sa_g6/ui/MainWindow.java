@@ -35,6 +35,7 @@ public class MainWindow extends JFrame {
     private static MainWindow mw = null;
     JTabbedPane tabs = new JTabbedPane();
     JMenuBar menuBar = new JMenuBar();
+    public final FileChooser fileChooser;
 
     private MainWindow(){
         super("Lexi Document Editor");
@@ -44,16 +45,43 @@ public class MainWindow extends JFrame {
         init();
         setSize(800,600);
         setLocationRelativeTo(null);
+        fileChooser = new FileChooser(this);
     }
 
     void init(){
-        Tab tab1 = new Tab(true);
-        tabs.add("new 1", tab1);
-        tabs.add("new 2", new Tab());
+        //Tab tab1 = new Tab(true);
+        addTab("debug", true);
 
         JMenu fileMenu = new JMenu("File");
         JMenuItem item = new JMenuItem("Open");
         fileMenu.add(item);
+
+        IMenuItem save = new IMenuItem("Save", (e) -> {
+            fileChooser.setLoadMode(false);
+            showWindow(fileChooser);
+            //BetterAction.saveDocument(getCurrentTab());
+        });
+        fileMenu.add(save);
+        IMenuItem load = new IMenuItem("Load", (e) -> {
+            fileChooser.setLoadMode(true);
+            showWindow(fileChooser);
+            //BetterAction.loadDocument(getCurrentTab(), 774); //327 382 412 434 456 478 500 530 552 580 610
+        });
+        fileMenu.add(load);
+        IMenuItem newTab = new IMenuItem("New", (e) ->{
+            int max = 0;
+            for(int i = 0; i < tabs.getTabCount(); i++){
+                String title = tabs.getTitleAt(i);
+                if(title.startsWith("new ")){
+                    try{
+                        max = Math.max(max, Integer.parseInt(title.substring(4)));
+                    }catch (NumberFormatException ignored){ }
+                }
+            }
+            addTab("new " + (max+1));
+        });
+        fileMenu.add(newTab);
+
         menuBar.add(fileMenu);
 
         JMenu insert = new JMenu("Insert");
@@ -62,15 +90,15 @@ public class MainWindow extends JFrame {
         menuBar.add(insert);
 
         JMenu formatMenu = new JMenu("Format");
-        formatMenu.add(new AlignmentMenuItem("Align Left", new LeftAlignment()));
+        formatMenu.add(new AlignmentMenuItem("Align left", new LeftAlignment()));
         formatMenu.add(new AlignmentMenuItem("Align Right", new RightAlignment()));
         formatMenu.add(new AlignmentMenuItem("Align Center", new CenterAlignment()));
         menuBar.add(formatMenu);
 
         JMenu fontMenu = new JMenu("Font");
         fontMenu.add(new FontMenuItem("Bold", new Bold()));
-        fontMenu.add(new FontMenuItem("Italic", new Italic()));
-        fontMenu.add(new FontMenuItem("Underline", new Underline()));
+        fontMenu.add(new FontMenuItem("italic", new Italic()));
+        fontMenu.add(new FontMenuItem("underline", new Underline()));
         menuBar.add(fontMenu);
 
         Prov<JTextPane> prov = ()-> ((Tab)tabs.getSelectedComponent()).getEditor();
@@ -117,8 +145,6 @@ public class MainWindow extends JFrame {
         menuBar.add(DisplayModeMenu);
         
         setJMenuBar(menuBar);
-
-        tab1.insertTable(tab1.getEditor().getCaretPosition(),2,3);
 
         item.addActionListener(new ActionListener() {
             @Override
@@ -172,5 +198,25 @@ public class MainWindow extends JFrame {
     public static MainWindow getInstance(){
         if(mw == null) mw = new MainWindow();
         return mw;
+    }
+
+    public void addTab(String name){
+        addTab(name, false);
+    }
+
+    public void addTab(String name, boolean debug){
+        tabs.addTab(name, new Tab(debug));
+        tabs.setTabComponentAt(tabs.getTabCount()-1, new ButtonTabComponent(tabs));
+        tabs.setSelectedIndex(tabs.getTabCount()-1);
+    }
+
+    public JTabbedPane getTabs(){
+        return tabs;
+    }
+
+    public void showWindow(Window window){
+        SwingUtilities.invokeLater(()->{
+            window.setVisible(true);
+        });
     }
 }

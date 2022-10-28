@@ -9,15 +9,15 @@ import java.util.ArrayList;
 public class MouseEventBus extends MouseAdapter implements MouseMotionListener, MouseListener,IMouseEventSubject {
     private ArrayList<MouseObserver> observerList = new ArrayList<MouseObserver>();
 
-    public void subscribe(MouseObserver mouseOberserver){
-        observerList.add(mouseOberserver);
+    public void subscribe(MouseObserver mouseObserver){
+        observerList.add(mouseObserver);
     }
-    public void unsubscribe(MouseObserver mouseOberserver){
-        observerList.remove(mouseOberserver);
+    public void unsubscribe(MouseObserver mouseObserver){
+        observerList.remove(mouseObserver);
     }
     public void notifiAll(MouseEvent e){
-        for (MouseObserver oberserver: observerList ) {
-            oberserver.update(e);
+        for (MouseObserver observer: observerList ) {
+            observer.update(e);
         }
     }
     @Override
@@ -31,25 +31,21 @@ public class MouseEventBus extends MouseAdapter implements MouseMotionListener, 
     @Override
     public void mouseMoved(MouseEvent e) {
         notifiAll(e);
-        //System.out.println(e);
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
         notifiAll(e);
-        System.out.println(e);
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
         notifiAll(e);
-        //System.out.println(e);
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
         notifiAll(e);
-        //System.out.println(e);
     }
 
 }

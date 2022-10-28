@@ -18,7 +18,7 @@ public class ImgEntity{
     @Id @GeneratedValue
     private int id;
     byte[] images;
-    private String url;
+    String url;
     public void setImages(byte[] images) {
         this.images = images;
     }
@@ -49,7 +49,7 @@ public class ImgEntity{
     public ImgEntity(URL url, Image image) throws IOException {
         ByteArrayOutputStream outStreamObj = new ByteArrayOutputStream();
         ImageIO.write((RenderedImage) image, "png", outStreamObj);
-        byte [] byteArray = outStreamObj.toByteArray();
+        byte[] byteArray = outStreamObj.toByteArray();
         this.images = byteArray;
         this.url = url.toString();
     }

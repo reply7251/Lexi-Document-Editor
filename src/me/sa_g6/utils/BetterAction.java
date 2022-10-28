@@ -85,7 +85,7 @@ public class BetterAction {
                 imageCache.cache.put(url,image);
             }
             catch (IOException e){
-
+                e.printStackTrace();
             }
         }
 
@@ -93,6 +93,14 @@ public class BetterAction {
         tab.getEditor().setDocument(document);
         tab.registerDocumentListener();
         tab.getEditor().setText(da.getHTML());
+        try {
+            GapContent content = (GapContent) document.hackGetContent();
+            content.remove(0, content.length()-1);
+            content.insertString(0, da.getDocString());
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+        }
+
         document.hackWriteLock();
         Element element = ElementManager.INSTANCE.getElement(document, id);
         AbstractDocument.BranchElement root = (AbstractDocument.BranchElement) document.getDefaultRootElement();
@@ -103,19 +111,23 @@ public class BetterAction {
 
     public static void saveDocument(Tab tab, String name){
         EnhancedHTMLDocument document = tab.getDocument();
+
         dbManager.begin();
         lastSaveID = ElementManager.INSTANCE.saveElement(document.getDefaultRootElement().getElement(1));
+
         try {
-            DocumentAdapter documentAdapter = new DocumentAdapter(lastSaveID, tab.getEditor().getText(), document.getText(0, document.getLength()), name);
+            DocumentAdapter documentAdapter = new DocumentAdapter(lastSaveID, tab.getEditor().getText(), document.getText(0, document.getLength()+1), name);
             Dictionary<URL, Image> cache = ImageCache.getImageCache(document).getCache();
             for(Iterator<URL> iterator = cache.keys().asIterator(); iterator.hasNext();){
                 URL url = iterator.next();
                 Image image = cache.get(url);
-                ImgEntity imgEntity = new ImgEntity();
+                /*
                 ByteArrayOutputStream outStreamObj = new ByteArrayOutputStream();
                 ImageIO.write((RenderedImage) image, "png", outStreamObj);
                 byte [] byteArray = outStreamObj.toByteArray();
                 imgEntity.setImages(byteArray);
+                 */
+                ImgEntity imgEntity = new ImgEntity(url, image);
                 int id;
                 id = dbManager.saveImage(imgEntity);
                 documentAdapter.addImage(id);
