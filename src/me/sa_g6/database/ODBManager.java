@@ -2,6 +2,7 @@ package me.sa_g6.database;
 
 import me.sa_g6.adapter.AbstractElementAdapter;
 import me.sa_g6.adapter.DocumentAdapter;
+import me.sa_g6.adapter.ImgEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -25,6 +26,17 @@ public class ODBManager implements IDBManager{
         return elementAdapter.getId();
     }
 
+    @Override
+    public int saveImage(ImgEntity imgEntity) {
+        em.persist(imgEntity);
+        em.flush();
+        return imgEntity.getId();
+    }
+
+    @Override
+    public ImgEntity getImage(int id) {
+        return em.find(ImgEntity.class, id);
+    }
 
 
     @Override

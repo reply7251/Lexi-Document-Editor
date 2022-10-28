@@ -1,6 +1,7 @@
 package me.sa_g6.utils;
 
 import me.sa_g6.adapter.DocumentAdapter;
+import me.sa_g6.adapter.ImgEntity;
 import me.sa_g6.database.ElementManager;
 import me.sa_g6.database.IDBManager;
 import me.sa_g6.database.ODBManager;
@@ -18,17 +19,23 @@ import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.undo.*;
+import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Iterator;
+import java.util.List;
 
 import static javax.swing.text.DefaultStyledDocument.BUFFER_SIZE_DEFAULT;
 
@@ -56,8 +63,9 @@ public class BetterAction {
     }
 
     public static void insertImage(JTextPane editor, int offset, BufferedImage image){
-        URL url = ImageUtils.putImage(image);
         EnhancedHTMLDocument doc = (EnhancedHTMLDocument) editor.getDocument();
+        URL url = ImageCache.putImage(doc,image);
+
         doc.startEdit();
         insertHtml(editor,offset, "<img src=\"%s\" width=\"%d\" height=\"%d\" style=\"display:block\">".formatted(url, image.getWidth(), image.getHeight())
             ,mayHasNewLine(editor, offset) ? null : HTML.Tag.IMG);
@@ -67,6 +75,20 @@ public class BetterAction {
     public static void loadDocument(Tab tab, long id){
         EnhancedHTMLDocument document = new EnhancedHTMLDocument();//tab.getDocument();
         DocumentAdapter da = dbManager.getHtml(id);
+        ImageCache imageCache = ImageCache.getImageCache(document);
+        for(int imageId: da.getImages()){
+            ImgEntity imgEntity = dbManager.getImage(imageId);
+            ByteArrayInputStream in = new ByteArrayInputStream(imgEntity.getImages());
+            try{
+                BufferedImage image = ImageIO.read(in);
+                URL url = new URL(imgEntity.getUrl());
+                imageCache.cache.put(url,image);
+            }
+            catch (IOException e){
+
+            }
+        }
+
 
         tab.getEditor().setDocument(document);
         tab.registerDocumentListener();
@@ -84,9 +106,25 @@ public class BetterAction {
         dbManager.begin();
         lastSaveID = ElementManager.INSTANCE.saveElement(document.getDefaultRootElement().getElement(1));
         try {
-            dbManager.saveHtml(new DocumentAdapter(lastSaveID, tab.getEditor().getText(), document.getText(0, document.getLength()), name));
+            DocumentAdapter documentAdapter = new DocumentAdapter(lastSaveID, tab.getEditor().getText(), document.getText(0, document.getLength()), name);
+            Dictionary<URL, Image> cache = ImageCache.getImageCache(document).getCache();
+            for(Iterator<URL> iterator = cache.keys().asIterator(); iterator.hasNext();){
+                URL url = iterator.next();
+                Image image = cache.get(url);
+                ImgEntity imgEntity = new ImgEntity();
+                ByteArrayOutputStream outStreamObj = new ByteArrayOutputStream();
+                ImageIO.write((RenderedImage) image, "png", outStreamObj);
+                byte [] byteArray = outStreamObj.toByteArray();
+                imgEntity.setImages(byteArray);
+                int id;
+                id = dbManager.saveImage(imgEntity);
+                documentAdapter.addImage(id);
+
+            }
+            dbManager.saveHtml(documentAdapter);
         } catch (BadLocationException e) {
             e.printStackTrace();
+        } catch (IOException e) {
         }
         System.out.println("save to ID: " + lastSaveID+ ", name: " + name);
 
