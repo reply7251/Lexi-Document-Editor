@@ -106,14 +106,14 @@ public class BetterAction {
         AbstractDocument.BranchElement root = (AbstractDocument.BranchElement) document.getDefaultRootElement();
         root.replace(1, root.getChildCount()-1 , new Element[]{element});
         document.hackWriteUnlock();
-        tab.getEditor().editElement();
+        tab.getEditor().updateView();
     }
 
     public static void saveDocument(Tab tab, String name){
         EnhancedHTMLDocument document = tab.getDocument();
 
         dbManager.begin();
-        lastSaveID = ElementManager.INSTANCE.saveElement(document.getDefaultRootElement().getElement(1));
+        lastSaveID = ElementManager.INSTANCE.saveElement((AbstractDocument.AbstractElement) document.getDefaultRootElement().getElement(1));
 
         try {
             DocumentAdapter documentAdapter = new DocumentAdapter(lastSaveID, tab.getEditor().getText(), document.getText(0, document.getLength()+1), name);

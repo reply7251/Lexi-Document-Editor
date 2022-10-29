@@ -22,6 +22,7 @@ public class ImageCache {
     public Dictionary<URL, Image> getCache(){
         return cache;
     }
+
     public static ImageCache getImageCache(Document document){
 
         if(!imageCaches.containsKey(document)){

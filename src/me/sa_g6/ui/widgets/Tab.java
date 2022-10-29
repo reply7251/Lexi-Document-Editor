@@ -1,30 +1,23 @@
 package me.sa_g6.ui.widgets;
 
-import me.sa_g6.iterator.ElementTreeIterator;
-import me.sa_g6.formatting.FullDisplayMode;
-import me.sa_g6.ui.MainWindow;
+import me.sa_g6.adapter.TextPaneAdapter;
 import me.sa_g6.utils.BetterAction;
 import me.sa_g6.utils.ImageCache;
-import me.sa_g6.utils.Size;
 import me.sa_g6.utils.StringUtils;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.UndoableEditEvent;
-import javax.swing.event.UndoableEditListener;
-import javax.swing.text.Element;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
-import javax.swing.text.html.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 
 public class Tab extends JPanel {
 
-    EnhancedTextPane editor = new EnhancedTextPane();
+    TextPaneAdapter editor = new TextPaneAdapter();
     JPopupMenu popup = new JPopupMenu();
     public boolean puretext = false;
     public final BetterAction.UndoManager undo;
@@ -168,7 +161,7 @@ public class Tab extends JPanel {
         }
     }
 
-    public EnhancedTextPane getEditor() {
+    public TextPaneAdapter getEditor() {
         return editor;
     }
 

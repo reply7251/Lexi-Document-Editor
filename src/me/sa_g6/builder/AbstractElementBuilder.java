@@ -54,9 +54,7 @@ public abstract class AbstractElementBuilder implements IElementBuilder{
     @Override
     public AbstractDocument.AbstractElement build() {
         AbstractDocument.AbstractElement result = factory.create(this);
-        getAttrs().forEach((k, v) -> {
-            result.addAttribute(k, v);
-        });
+        getAttrs().forEach(result::addAttribute);
         return result;
     }
 }

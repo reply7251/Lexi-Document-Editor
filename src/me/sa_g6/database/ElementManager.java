@@ -26,28 +26,14 @@ public class ElementManager{
         this.dbManager = dbManager;
     }
 
-    public long saveElement(Element element) {
+    public long saveElement(AbstractDocument.AbstractElement element) {
         AbstractElementAdapter adapter = new AbstractElementAdapter(element);
         if(element instanceof AbstractDocument.BranchElement){
             List<Long> children = new ArrayList<>();
-            ElementIterator iter = new ElementIterator(element);
-            Element child = null;
-            for(; iter.hasNext();){
-                child = iter.next();
-                if (child.getName().equals("p-implied") && false){
-                    if(child.getName().equals("content") && child.getAttributes().getAttribute("CR") != null){
-                        //continue;
-                    }
-                    children.addAll(saveParagraphElement(child));
-                    //children.add(saveElement(child));
-                }else{
-                    children.add(saveElement(child));
-                }
-            }
-            if(children.size() == 0){
-                if (child != null){
-                    //children.add(saveElement(child));
-                }
+            AbstractDocument.AbstractElement child;
+            for(ElementIterator iter = new ElementIterator(element) ; iter.hasNext();){
+                child = (AbstractDocument.AbstractElement) iter.next();
+                children.add(saveElement(child));
             }
             adapter.setChildren(children);
         } else if(element instanceof AbstractDocument.LeafElement){
@@ -71,9 +57,9 @@ public class ElementManager{
     public List<Long> saveParagraphElement(Element element){
         List<Long> children = new ArrayList<>();
         ElementIterator iter = new ElementIterator(element);
-        Element child = null;
+        AbstractDocument.AbstractElement child = null;
         for(; iter.hasNext();){
-            child = iter.next();
+            child = (AbstractDocument.AbstractElement) iter.next();
             children.add(saveElement(child));
         }
         return children;
@@ -117,10 +103,11 @@ public class ElementManager{
             AbstractDocument.BranchElement element = (AbstractDocument.BranchElement) builder.build();
 
             List<AbstractDocument.AbstractElement> children = new ArrayList<>();
-            for (Long adapterChild : adapter.getChildren()) {
-                children.add(getElement(document, element, adapterChild));
+            for(Iterator<Long> iter = adapter.createIterator(); iter.hasNext();){
+                children.add(getElement(document, element, iter.next()));
             }
             element.replace(0,element.getElementCount(), children.toArray(new AbstractDocument.AbstractElement[0]));
+
             return element;
         }else{
             LeafElementBuilder leafBuilder = (LeafElementBuilder) builder;

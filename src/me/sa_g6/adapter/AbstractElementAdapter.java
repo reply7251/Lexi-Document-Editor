@@ -1,6 +1,8 @@
 package me.sa_g6.adapter;
 
 import me.sa_g6.database.ElementType;
+import me.sa_g6.iterator.Aggregate;
+import me.sa_g6.iterator.LongIterator;
 import me.sa_g6.utils.ReflectionUtils;
 
 import javax.swing.text.AbstractDocument;
@@ -19,7 +21,7 @@ import java.util.List;
 import static javax.swing.text.html.CSS.Attribute.*;
 
 @Entity @Access(AccessType.PROPERTY)
-public class AbstractElementAdapter implements Serializable {
+public class AbstractElementAdapter implements Serializable, Aggregate<Long> {
     static final HTML.Tag[] ignoredTags = {HTML.Tag.IMPLIED, HTML.Tag.COMMENT, HTML.Tag.CONTENT};
 
     private static final CSS.Attribute[] ALL_MARGINS =
@@ -38,7 +40,7 @@ public class AbstractElementAdapter implements Serializable {
 
     private static Hashtable<Object, Object> valueConvertor;
 
-    transient Element target;
+    transient AbstractDocument.AbstractElement target;
 
     long id;
 
@@ -53,7 +55,7 @@ public class AbstractElementAdapter implements Serializable {
 
     public AbstractElementAdapter(){}
 
-    public AbstractElementAdapter(Element element){
+    public AbstractElementAdapter(AbstractDocument.AbstractElement element){
         target = element;
         if(target.isLeaf()){
             type = ElementType.LEAF;
@@ -108,20 +110,13 @@ public class AbstractElementAdapter implements Serializable {
                 value = tmp;
             }else if((tmp = getIgnoredTag(value.toString())) != null){
                 value = tmp;
-            }/*else{
-                try{
-                    tmp = Color.decode(value.toString());
-                    value = tmp;
-                }catch (NumberFormatException ignored){}
             }
-            */
 
             if((tmp = StyleContext.getStaticAttribute(key)) != null){
                 key = tmp;
             }
             if(valueConvertor.containsKey(key)){
                 Object convertor = valueConvertor.get(key);
-                //Object parseCssValue(String value)
                 tmp = ReflectionUtils.invoke(convertor.getClass(), convertor, "parseCssValue", new Class[]{String.class}, value.toString());
                 value = tmp;
             }
@@ -177,5 +172,10 @@ public class AbstractElementAdapter implements Serializable {
 
     static {
         valueConvertor = ReflectionUtils.getVariable(CSS.class, new CSS(), "valueConvertor");
+    }
+
+    @Override
+    public Iterator<Long> createIterator() {
+        return new LongIterator(this);
     }
 }

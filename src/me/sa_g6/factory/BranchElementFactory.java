@@ -15,7 +15,7 @@ public class BranchElementFactory extends AbstractElementFactory{
 
     @Override
     public AbstractDocument.AbstractElement create(AbstractElementBuilder builder) {
-        DefaultStyledDocument.ElementSpec spec = new DefaultStyledDocument.ElementSpec(null, DefaultStyledDocument.ElementSpec.StartTagType);
+
         return document.hackCreateBranchElement(builder.getParent());
     }
 }
