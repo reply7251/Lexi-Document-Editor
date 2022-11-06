@@ -20,6 +20,8 @@ public class MouseEventBus extends MouseAdapter implements MouseMotionListener, 
             observer.update(e);
         }
     }
+
+    /*When mouse event */
     @Override
     public void mouseClicked(MouseEvent e) {
         notifiAll(e);

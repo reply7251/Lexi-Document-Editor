@@ -14,8 +14,6 @@ public class TextOnlyDisplayMode implements DisplayMode {
     JTextPane curJTextPane;
     MainWindow mainWindow;
 
-
-
     @Override
 
     public void perform(JTextPane editor) {
@@ -25,6 +23,7 @@ public class TextOnlyDisplayMode implements DisplayMode {
         StyleConstants.setSpaceAbove(attr,1);
         StyleConstants.setSpaceBelow(attr,1);
         editor.getStyledDocument().setParagraphAttributes(0,Integer.MAX_VALUE,attr,false);
+        MainWindow.getInstance().getCurrentTab().puretext=true;
 
     }
 
