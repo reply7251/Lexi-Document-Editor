@@ -74,6 +74,13 @@ public class ImageController implements Serializable, MouseObserver {
 
 
     public void mouseClicked(MouseEvent e) {
+        if (resizer != null) {
+            editor.remove(resizer);
+            resizer.invalidate();
+            editor.revalidate();
+            editor.repaint();
+            resizer = null;
+        }
         if (e.getSource() instanceof JEditorPane editor && editor.isEnabled()) {
             if (curElemImage) {
                 if (SwingUtilities.isLeftMouseButton(e)) {
@@ -92,12 +99,6 @@ public class ImageController implements Serializable, MouseObserver {
                     return;
                 }
             }
-        }
-        if (resizer != null) {
-            editor.remove(resizer);
-            resizer.invalidate();
-            editor.repaint();
-            resizer = null;
         }
     }
 
