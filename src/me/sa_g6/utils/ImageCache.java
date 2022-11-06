@@ -13,9 +13,6 @@ public class ImageCache {
 
     static HashMap<Document, ImageCache> imageCaches = new HashMap<>();
 
-    int counter = 0;
-
-
     ImageCache(){
 
     }
@@ -36,7 +33,7 @@ public class ImageCache {
     public static URL putImage(Document document, Image image){
         try {
             ImageCache cache = getImageCache(document);
-            URL url = new URL("file","", String.valueOf(cache.counter++));
+            URL url = new URL("file","", String.valueOf(cache.cache.size()));
             cache.cache.put(url,image);
             return url;
         } catch (MalformedURLException e) {
