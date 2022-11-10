@@ -21,7 +21,7 @@ import java.util.List;
 import static javax.swing.text.html.CSS.Attribute.*;
 
 @Entity @Access(AccessType.PROPERTY)
-public class AbstractElementAdapter implements Serializable, Aggregate<Long> {
+public class AbstractElementAdapter implements Serializable, Aggregate<Long> { //以下是將element轉成資料庫可以支援的格式
     static final HTML.Tag[] ignoredTags = {HTML.Tag.IMPLIED, HTML.Tag.COMMENT, HTML.Tag.CONTENT};
 
     private static final CSS.Attribute[] ALL_MARGINS =

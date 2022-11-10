@@ -14,15 +14,15 @@ import java.util.List;
 import java.util.Map;
 
 @Entity
-public class DocumentAdapter {
+public class DocumentAdapter { //以下為Document的屬性
     @Id
-    @Column(name = "ELEMENT_ID")
+    @Column(name = "ELEMENT_ID") //元素id
     long id;
-    @Column(name = "HTML")
+    @Column(name = "HTML") //html
     String html;
-    @Column(name = "DOC_STRING")
+    @Column(name = "DOC_STRING") //純文字
     String docString;
-    @Column(name = "FILE_NAME")
+    @Column(name = "FILE_NAME")//檔案名稱
     String name;
 
     List<Integer> images = new ArrayList<>();
