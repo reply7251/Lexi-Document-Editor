@@ -15,7 +15,7 @@ public class MouseEventBus extends MouseAdapter implements MouseMotionListener, 
     public void unsubscribe(MouseObserver mouseObserver){
         observerList.remove(mouseObserver);
     }
-    public void notifiAll(MouseEvent e){
+    public void notifyAll(MouseEvent e){
         for (MouseObserver observer: observerList ) {
             observer.update(e);
         }
@@ -24,30 +24,30 @@ public class MouseEventBus extends MouseAdapter implements MouseMotionListener, 
     /*When mouse event */
     @Override
     public void mouseClicked(MouseEvent e) {
-        notifiAll(e);
+        notifyAll(e);
     }
     @Override
     public void mouseDragged(MouseEvent e) {
-        notifiAll(e);
+        notifyAll(e);
     }
     @Override
     public void mouseMoved(MouseEvent e) {
-        notifiAll(e);
+        notifyAll(e);
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        notifiAll(e);
+        notifyAll(e);
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        notifiAll(e);
+        notifyAll(e);
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-        notifiAll(e);
+        notifyAll(e);
     }
 
 }
