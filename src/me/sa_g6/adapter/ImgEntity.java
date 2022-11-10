@@ -13,12 +13,12 @@ import java.util.*;
 import java.util.List;
 
 @Entity
-public class ImgEntity{
+public class ImgEntity{ //以下為image object的屬性
 
     @Id @GeneratedValue
-    private int id;
-    byte[] images;
-    String url;
+    private int id; //image id
+    byte[] images; //被轉成byte array 的 image
+    String url; // image的位置
     public void setImages(byte[] images) {
         this.images = images;
     }
