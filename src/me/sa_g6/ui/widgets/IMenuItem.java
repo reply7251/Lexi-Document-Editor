@@ -10,6 +10,11 @@ public class IMenuItem extends JMenuItem {
         super(text);
 
         addActionListener(listener);
+        addActionListener((e)->{
+            if(getTab().getEditor().getEditorKit() instanceof EnhancedHTMLDocument.EnhancedHTMLEditorKit kit){
+                kit.imageController.removeResizer();
+            }
+        });
     }
 
     protected static final Tab getTab(){

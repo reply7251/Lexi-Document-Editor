@@ -57,8 +57,6 @@ public class ImageController implements Serializable, MouseObserver {
                 break;
 
         }
-
-
     }
 
     public void setEditor(JTextPane editor) {
@@ -72,8 +70,7 @@ public class ImageController implements Serializable, MouseObserver {
         doc.hackFireChangedUpdate(doc.new DefaultDocumentEvent(start, len, DocumentEvent.EventType.CHANGE));
     }
 
-
-    public void mouseClicked(MouseEvent e) {
+    public void removeResizer(){
         if (resizer != null) {
             editor.remove(resizer);
             resizer.invalidate();
@@ -81,6 +78,11 @@ public class ImageController implements Serializable, MouseObserver {
             editor.repaint();
             resizer = null;
         }
+    }
+
+
+    public void mouseClicked(MouseEvent e) {
+        removeResizer();
         if (e.getSource() instanceof JEditorPane editor && editor.isEnabled()) {
             if (curElemImage) {
                 if (SwingUtilities.isLeftMouseButton(e)) {
