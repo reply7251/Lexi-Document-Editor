@@ -132,6 +132,7 @@ public class MainWindow extends JFrame {
         menuBar.add(FontColorMenu);
         
         JMenu BackgroundColorMenu = new JMenu("Background Color");
+        BackgroundColorMenu.add(new BackgroundColorMenuItem("White",Color.white));
         BackgroundColorMenu.add(new BackgroundColorMenuItem("Red",Color.red));
         BackgroundColorMenu.add(new BackgroundColorMenuItem("Green",Color.green));
         BackgroundColorMenu.add(new BackgroundColorMenuItem("Blue",Color.blue));

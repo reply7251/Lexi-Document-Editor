@@ -7,7 +7,9 @@ import javax.swing.text.StyleConstants;
 public class Bold implements Font{
     public void perform(JTextPane editor){
         SimpleAttributeSet attr = new SimpleAttributeSet();
-        StyleConstants.setBold(attr, true);
+        StyleConstants.setBold(attr, !StyleConstants.isBold(
+                editor.getStyledDocument().getCharacterElement(editor.getSelectionStart()).getAttributes()
+        ));
         editor.setCharacterAttributes(attr, false);
     }
 }

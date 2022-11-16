@@ -7,7 +7,9 @@ import javax.swing.text.StyleConstants;
 public class Italic implements Font{
     public void perform(JTextPane editor){
         SimpleAttributeSet attr = new SimpleAttributeSet();
-        StyleConstants.setItalic(attr, true);
+        StyleConstants.setItalic(attr, !StyleConstants.isItalic(
+                editor.getStyledDocument().getCharacterElement(editor.getSelectionStart()).getAttributes()
+        ));
         editor.setCharacterAttributes(attr, false);
     }
 }
