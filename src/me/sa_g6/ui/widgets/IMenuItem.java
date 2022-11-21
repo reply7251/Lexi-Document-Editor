@@ -11,6 +11,9 @@ public class IMenuItem extends JMenuItem {
 
         addActionListener(listener);
         addActionListener((e)->{
+            if(getTab() == null){
+                return;
+            }
             if(getTab().getEditor().getEditorKit() instanceof EnhancedHTMLDocument.EnhancedHTMLEditorKit kit){
                 kit.imageController.removeResizer();
             }
