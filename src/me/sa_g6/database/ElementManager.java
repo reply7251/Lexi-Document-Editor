@@ -103,9 +103,11 @@ public class ElementManager{
             AbstractDocument.BranchElement element = (AbstractDocument.BranchElement) builder.build();
 
             List<AbstractDocument.AbstractElement> children = new ArrayList<>();
-            for(Iterator<Long> iter = adapter.createIterator(); iter.hasNext();){
-                children.add(getElement(document, element, iter.next()));
+
+            for(long childId : adapter) {
+                children.add(getElement(document, element, childId));
             }
+
             element.replace(0,element.getElementCount(), children.toArray(new AbstractDocument.AbstractElement[0]));
 
             return element;

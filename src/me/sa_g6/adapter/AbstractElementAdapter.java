@@ -1,7 +1,6 @@
 package me.sa_g6.adapter;
 
 import me.sa_g6.database.ElementType;
-import me.sa_g6.iterator.Aggregate;
 import me.sa_g6.iterator.LongIterator;
 import me.sa_g6.utils.ReflectionUtils;
 
@@ -21,7 +20,7 @@ import java.util.List;
 import static javax.swing.text.html.CSS.Attribute.*;
 
 @Entity @Access(AccessType.PROPERTY)
-public class AbstractElementAdapter implements Serializable, Aggregate<Long> { //以下是將element轉成資料庫可以支援的格式
+public class AbstractElementAdapter implements Serializable, Iterable<Long> { //以下是將element轉成資料庫可以支援的格式
     static final HTML.Tag[] ignoredTags = {HTML.Tag.IMPLIED, HTML.Tag.COMMENT, HTML.Tag.CONTENT};
 
     private static final CSS.Attribute[] ALL_MARGINS =
@@ -175,7 +174,7 @@ public class AbstractElementAdapter implements Serializable, Aggregate<Long> { /
     }
 
     @Override
-    public Iterator<Long> createIterator() {
+    public Iterator<Long> iterator() {
         return new LongIterator(this);
     }
 }
